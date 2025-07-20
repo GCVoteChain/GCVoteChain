@@ -25,9 +25,27 @@ async function createContract(contractPath, wallet, ...args) {
     const provider = new ethers.JsonRpcProvider(host);
     const wallet = new ethers.Wallet(privateKey, provider);
 
+    const adminManagerPath = path.resolve(__dirname, '../contracts', 'AdminManager.sol');
+    const voterManagerPath = path.resolve(__dirname, '../contracts', 'VoterManager.sol');
+    const electionManagerPath = path.resolve(__dirname, '../contracts', 'ElectionManager.sol');
     const votingPath = path.resolve(__dirname, '../contracts', 'Voting.json');
 
     let env = '';
+
+    createContract(adminManagerPath, wallet).then(async function(contract) {
+        const contractAddress = await contract.getAddress();
+        env += `ADMIN_MANAGER_ADDRESS=${contractAddress}`;
+    }).catch(console.error);
+
+    createContract(voterManagerPath, wallet).then(async function(contract) {
+        const contractAddress = await contract.getAddress();
+        env += `VOTER_MANAGER_ADDRESS=${contractAddress}`;
+    }).catch(console.error);
+
+    createContract(electionManagerPath, wallet).then(async function(contract) {
+        const contractAddress = await contract.getAddress();
+        env += `ELECTION_MANAGER_ADDRESS=${contractAddress}`;
+    }).catch(console.error);
 
     createContract(votingPath, wallet).then(async function(contract) {
         const contractAddress = await contract.getAddress();

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-contract AccessControlManager {
+contract AdminManager {
     mapping(address => bool) admins;
 
     constructor(address[] memory adminIDs) {

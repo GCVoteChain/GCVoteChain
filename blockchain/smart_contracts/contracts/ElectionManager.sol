@@ -1,21 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import './IAdminManager.sol';
+import './utils/IAdminManager.sol';
+import './utils/Candidate.sol';
 
 contract ElectionManager {
     IAdminManager private adminManager;
     
     enum Position { President, VicePresident, Secretary, Treasurer }
     uint positionCount = 4;
-    
-    struct Candidate {
-        uint id;
-        string name;        
-        uint votes;
-
-        bool exists;
-    }
 
     struct Election {
         string title;
@@ -112,5 +105,20 @@ contract ElectionManager {
 
         elections[id].onGoing = false;
         elections[id].hasEnded = true;
+    }
+
+    function vote(bytes32 electionId, bytes32 voterId, Candidate[] calldata votes) external validateElection(electionId) {
+        require(!elections[electionId].hasVoted[voterId], 'Already voted');
+
+        Election storage e = elections[electionId];
+
+        for (uint i = 0; i < votes.length; i++) {
+            Position pos = Position(i);
+
+            e.candidates[pos].push(votes[i]);
+        }
+
+        e.hasVoted[voterId] = true;
+        e.hasVotedKeys.push(voterId);
     }
 }

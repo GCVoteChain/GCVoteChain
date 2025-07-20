@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import './IAdminManager.sol';
+import './utils/IAdminManager.sol';
 
 contract VoterManager {
     IAdminManager private adminManager;
