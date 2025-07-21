@@ -11,11 +11,11 @@ contract Voting {
 
     address private backend;
 
-    constructor(address electionManagerAddress, address voterManagerAddress) {
+    constructor(address backendAddress, address electionManagerAddress, address voterManagerAddress) {
         electionManager = IElectionManager(electionManagerAddress);
         voterManager = IVoterManager(voterManagerAddress);
 
-        backend = msg.sender;
+        backend = backendAddress;
     }
 
 

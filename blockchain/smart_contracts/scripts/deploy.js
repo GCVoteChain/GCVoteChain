@@ -2,10 +2,11 @@ const path = require('path');
 const fs = require('fs');
 const ethers = require('ethers');
 
-const { quorum } = require('./keys.js');
+const { accounts, quorum } = require('./keys.js');
 const host = quorum.rpcnode.url;
 const privateKey = quorum.rpcnode.accountPrivateKey;
 
+const backend = accounts.a;
 
 async function createContract(contractPath, wallet, ...args) {
     const contractJson = JSON.parse(fs.readFileSync(contractPath));
@@ -25,31 +26,40 @@ async function createContract(contractPath, wallet, ...args) {
     const provider = new ethers.JsonRpcProvider(host);
     const wallet = new ethers.Wallet(privateKey, provider);
 
-    const adminManagerPath = path.resolve(__dirname, '../contracts', 'AdminManager.sol');
-    const voterManagerPath = path.resolve(__dirname, '../contracts', 'VoterManager.sol');
-    const electionManagerPath = path.resolve(__dirname, '../contracts', 'ElectionManager.sol');
-    const votingPath = path.resolve(__dirname, '../contracts', 'Voting.json');
+    const adminIds = [
+        accounts.b.address,
+        accounts.c.address,
+    ];
+
+    const adminManagerPath = path.resolve(__dirname, '../artifacts', 'AdminManager.json');
+    const voterManagerPath = path.resolve(__dirname, '../artifacts', 'VoterManager.json');
+    const electionManagerPath = path.resolve(__dirname, '../artifacts', 'ElectionManager.json');
+    const votingPath = path.resolve(__dirname, '../artifacts', 'Voting.json');
 
     let env = '';
 
-    createContract(adminManagerPath, wallet).then(async function(contract) {
+    const adminManagerAddress = await createContract(adminManagerPath, wallet, adminIds).then(async function(contract) {
         const contractAddress = await contract.getAddress();
-        env += `ADMIN_MANAGER_ADDRESS=${contractAddress}`;
+        env += `ADMIN_MANAGER_ADDRESS=${contractAddress}\n`;
+        return contractAddress;
     }).catch(console.error);
 
-    createContract(voterManagerPath, wallet).then(async function(contract) {
+    const voterManagerAddress = await createContract(voterManagerPath, wallet, adminManagerAddress).then(async function(contract) {
         const contractAddress = await contract.getAddress();
-        env += `VOTER_MANAGER_ADDRESS=${contractAddress}`;
+        env += `VOTER_MANAGER_ADDRESS=${contractAddress}\n`;
+        return contractAddress;
     }).catch(console.error);
 
-    createContract(electionManagerPath, wallet).then(async function(contract) {
+    const electionManagerAddress = await createContract(electionManagerPath, wallet, adminManagerAddress).then(async function(contract) {
         const contractAddress = await contract.getAddress();
-        env += `ELECTION_MANAGER_ADDRESS=${contractAddress}`;
+        env += `ELECTION_MANAGER_ADDRESS=${contractAddress}\n`;
+        return contractAddress;
     }).catch(console.error);
 
-    createContract(votingPath, wallet).then(async function(contract) {
+    const votingAddress = await createContract(votingPath, wallet, backend.address, electionManagerAddress, voterManagerAddress).then(async function(contract) {
         const contractAddress = await contract.getAddress();
-        env += `VOTING_ADDRESS=${contractAddress}`;
+        env += `VOTING_ADDRESS=${contractAddress}\n`;
+        return contractAddress;
     }).catch(console.error);
 
     fs.writeFileSync(path.resolve(__dirname, '../../../server', '.env'), env);

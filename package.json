@@ -4,7 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "install": "cd client && npm install && cd ../server && npm install && cd ../blockchain && npm install"
+    "install": "cd client && npm install && cd ../server && npm install && cd ../blockchain && npm install",
+
+    "blockchain-start": "cd blockchain && ./run.sh",
+    "blockchain-resume": "cd blockchain && ./resume.sh",
+    "blockchain-stop": "cd blockchain && ./stop.sh",
+    "blockchain-restart": "cd blockchain && ./restart.sh",
+    "blockchain-remove": "cd blockchain && ./remove.sh",
+    "blockchain-list": "cd blockchain && ./list.sh",
+    "contract-compile": "cd blockchain/smart_contracts/scripts && npm run compile",
+    "contract-deploy": "cd blockchain/smart_contracts/scripts && npm run deploy"
   },
   "keywords": [],
   "author": "",
