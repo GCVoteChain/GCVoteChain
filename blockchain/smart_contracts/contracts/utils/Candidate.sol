@@ -2,8 +2,7 @@
 pragma solidity ^0.8.10;
 
 struct Candidate {
-    uint id;
-    string name;
+    bytes32 id;
     uint votes;
 
     bool exists;
