@@ -1,12 +1,12 @@
 const db = require('../data/db');
 
 function registerUser(name, hashedPassword, callback) {
-    db.run(`INSERT INTO users (name, password) VALUES (?, ?)`, [name, hashedPassword], callback);
+    db.run(`INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)`, [name, name, hashedPassword, 'voter', name, 0], callback);
 }
 
 
 function getUser(name, callback) {
-    db.get(`SELECT * FROM users WHERE name = ?`, [name], callback);
+    db.get(`SELECT * FROM users WHERE student_id = ?`, [name], callback);
 }
 
 
