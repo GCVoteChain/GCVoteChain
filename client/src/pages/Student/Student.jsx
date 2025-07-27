@@ -1,6 +1,6 @@
-import "./css/Dashboard.css"
+import "./css/Student.css"
 
- function Dashboard (){
+ function Student (){
     return(
         <div className="bodies">
    <header className = "navbar">
@@ -77,4 +77,4 @@ import "./css/Dashboard.css"
 </div>
 
     )
-} export default Dashboard;
+} export default Student;
