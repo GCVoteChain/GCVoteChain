@@ -1,14 +1,15 @@
 import "./css/Student.css"
+import "./Result"
+import "./PartyList"
 
  function Student (){
     return(
         <div className="bodies">
    <header className = "navbar">
     <nav className="navbar-links">
-    <ul><li><a href="#">Dashboard</a></li>
-        <li><a href="#">Party Lists</a></li>
-        <li><a href="#">Results</a></li>
-        <li><a href="#">Contacts</a></li>
+    <ul><li><a href="./Student">Dashboard</a></li>
+        <li><a href=".PartyList">Party Lists</a></li>
+        <li><a href="./Result">Results</a></li>
         </ul>
         </nav>
    </header>
