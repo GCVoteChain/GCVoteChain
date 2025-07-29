@@ -6,7 +6,7 @@
 }
 
 .bodies{
-  height: 100%;
+  height: 50%;
 }
 
 .navbar {
@@ -26,16 +26,23 @@
   font-weight: bold;
 }
 
-.navbar-links ul {
+.navbar-links ul  {
   list-style: none;
   display: flex;
   gap: 30px;
 };
 
+.navbar-links ul li {
+  padding: 100px;
+};
+
+
 .navbar-links ul li a {
   color: white;
   text-decoration: none;
   transition: color 0.3s;
+  background-color: #ccc;
+
 }
 
 .navbar-links ul li a:hover {
@@ -57,6 +64,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
+
 }
 
 .partylist-card {
@@ -70,6 +78,7 @@
   margin-bottom: 15px;
   color: #ebebeb;
   text-align: center;
+
 }
 
 .member {
@@ -131,3 +140,6 @@
   flex-direction: column;
   gap: 10px;
 }
+
+
+

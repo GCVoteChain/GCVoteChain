@@ -4,6 +4,7 @@ function Admin () {
  return(
     <div className="bodies">
    <header className = "navbar">
+    <div class="navbar-logo">Gardner College E-Voting Admin Dashboard</div>
     <nav className="navbar-links">
     <ul><li><a href="./Voting">Voting</a></li>
         <li><a href="./Candidate">Candidate</a></li>

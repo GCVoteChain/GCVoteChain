@@ -9,12 +9,12 @@ function Login (){
                 <form action="">
                     <h1>Login</h1>
                     <div className="input-box">
-                        <input type="text" placeholder="Name" required/>
+                        <input type="text" placeholder="Username" required/>
                     </div>
                     <div className="input-box">
                         <input type="Password" placeholder="Password" required/>
                     </div>
-                    <button type="submit">Login</button>
+                   <div className="Button"><button type="submit">Login</button></div>
                 </form>
             </div>
         </div>

@@ -6,9 +6,10 @@ import "./PartyList"
     return(
         <div className="bodies">
    <header className = "navbar">
+    <div class="navbar-logo">Gardner College E-Voting</div>
     <nav className="navbar-links">
     <ul><li><a href="./Student">Dashboard</a></li>
-        <li><a href=".PartyList">Party Lists</a></li>
+        <li><a href="./PartyList">Party Lists</a></li>
         <li><a href="./Result">Results</a></li>
         </ul>
         </nav>
@@ -17,7 +18,7 @@ import "./PartyList"
  <section class="partylists">
 
       <div class="partylist-card">
-        <h2>Partylist:</h2>
+        <h2>Voting</h2>
         <form action="#" method="POST">
 
           <div class="member">

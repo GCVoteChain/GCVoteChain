@@ -1,8 +1,8 @@
 
 
-function PartyList(){
+function Settings(){
     return(
-         <div className="bodies">
+        <div className="bodies">
    <header className = "navbar">
     <div class="navbar-logo">Gardner College E-Voting Portal Student </div>
     <nav className="navbar-links">
@@ -14,6 +14,7 @@ function PartyList(){
    </header>
    </div>
     )
-} 
 
-export default PartyList;
+}
+
+export default Settings;
