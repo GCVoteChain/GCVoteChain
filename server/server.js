@@ -16,7 +16,16 @@ app.use(routes);
 
 const PORT = 8008;
 
-fs.appendFileSync(path.join(__dirname, '.env'), `PORT=${PORT}`);
+const envPath = path.join(__dirname, '.env');
+if (!fs.existsSync(envPath)) {
+  fs.writeFileSync(envPath, `PORT=${PORT}\n`);
+} else {
+  const envFile = fs.readFileSync(envPath, 'utf8');
+  const alreadyExists = envFile.split('\n').some(l => l.trim().startsWith('PORT='));
+  if (!alreadyExists) {
+    fs.appendFileSync(path.join(__dirname, '.env'), `PORT=${PORT}\n`);
+  }
+}
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
