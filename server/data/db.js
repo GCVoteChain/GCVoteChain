@@ -32,7 +32,7 @@ db.serialize(() => {
   // Candidates table
   db.run(`
     CREATE TABLE IF NOT EXISTS candidates (
-      voter_id TEXT NOT NULL,
+      id TEXT NOT NULL,
       position TEXT NOT NULL,
       name TEXT NOT NULL,
       election_id TEXT NOT NULL,
