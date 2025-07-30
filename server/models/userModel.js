@@ -1,12 +1,15 @@
 const db = require('../data/db');
+const { promisify } = require('util');
 
-function registerUser(name, hashedPassword, callback) {
-    db.run(`INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)`, [name, name, hashedPassword, 'voter', name, 0], callback);
+async function registerUser(voterId, studentId, hashedPassword, role, email) {
+    const run = promisify(db.run.bind(db));
+    return run(`INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)`, [voterId, studentId, hashedPassword, role, email, 0]);
 }
 
 
-function getUser(name, callback) {
-    db.get(`SELECT * FROM users WHERE student_id = ?`, [name], callback);
+async function getUser(name) {
+    const get = promisify(db.get.bind(db));
+    return get(`SELECT * FROM users WHERE student_id = ?`, [name]);
 }
 
 

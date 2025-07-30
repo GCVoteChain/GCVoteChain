@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const routes = require('./routes/routes');
 
@@ -23,7 +24,7 @@ if (!fs.existsSync(envPath)) {
   const envFile = fs.readFileSync(envPath, 'utf8');
   const alreadyExists = envFile.split('\n').some(l => l.trim().startsWith('PORT='));
   if (!alreadyExists) {
-    fs.appendFileSync(path.join(__dirname, '.env'), `PORT=${PORT}\n`);
+    fs.appendFileSync(envPath, `PORT=${PORT}\n`);
   }
 }
 
