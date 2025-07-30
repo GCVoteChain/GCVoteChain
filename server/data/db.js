@@ -37,7 +37,7 @@ db.serialize(() => {
       name TEXT NOT NULL,
       election_id TEXT NOT NULL,
       voteCount INTEGER NOT NULL DEFAULT 0,
-      FOREIGN KEY (voter_id) REFERENCES users(voter_id),
+      FOREIGN KEY (id) REFERENCES users(voter_id),
       FOREIGN KEY (election_id) REFERENCES elections(id)
     )
   `);
