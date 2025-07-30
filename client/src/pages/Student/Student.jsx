@@ -1,6 +1,4 @@
 import "./css/Student.css"
-import "./Result"
-import "./PartyList"
 
  function Student (){
     return(
