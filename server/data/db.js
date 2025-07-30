@@ -4,6 +4,8 @@ const sqlite3 = require('sqlite3').verbose();
 
 const db = new sqlite3.Database(path.join(__dirname, './database.db'));
 
+db.run("PRAGMA foreign_keys = ON");
+
 db.serialize(() => {
   // Users table
   db.run(`
@@ -37,6 +39,7 @@ db.serialize(() => {
       name TEXT NOT NULL,
       election_id TEXT NOT NULL,
       voteCount INTEGER NOT NULL DEFAULT 0,
+      PRIMARY KEY (id, election_id),
       FOREIGN KEY (id) REFERENCES users(voter_id),
       FOREIGN KEY (election_id) REFERENCES elections(id)
     )
