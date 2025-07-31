@@ -10,6 +10,8 @@ const userModel = require('./models/userModel');
 const candidateModel = require('./models/candidateModel');
 const electionModel = require('./models/electionModel');
 const voteModel = require('./models/voteModel');
+const transactionModel = require('./models/transactionModel');
+const logModel = require('./models/logModel');
 
 const app = express();
 
@@ -61,4 +63,10 @@ app.listen(PORT, () => {
 
   voteModel.addVoteStmt.finalize();
   voteModel.getVoteStmt.finalize();
+
+  transactionModel.addTransactionStmt.finalize();
+  transactionModel.setTransactionStatusStmt.finalize();
+  transactionModel.getTransactionStmt.finalize();
+
+  logModel.addLogStmt.finalize();
 }));
