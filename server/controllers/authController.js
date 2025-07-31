@@ -39,4 +39,22 @@ async function login(req, res) {
 }
 
 
-module.exports = { register, login };
+async function updatePassword(req, res) {
+    try {
+        const { studentId, password } = req.body;
+
+        await userModel.updatePassword(studentId, password);
+
+        res.send({ message: 'Password changed successfully' });
+    } catch (err) {
+        console.error('Error updating paswword:', err);
+        res.status(500).send({ message: 'Failed to update password' });
+    }
+}
+
+
+module.exports = {
+    register,
+    login,
+    updatePassword
+};

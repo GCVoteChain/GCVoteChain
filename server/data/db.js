@@ -13,8 +13,7 @@ db.exec(`
     student_id TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     role TEXT NOT NULL,
-    email TEXT NOT NULL,
-    has_voted INTEGER NOT NULL DEFAULT 0
+    email TEXT NOT NULL
   );
   
   CREATE TABLE IF NOT EXISTS elections (

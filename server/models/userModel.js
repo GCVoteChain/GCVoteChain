@@ -11,9 +11,16 @@ const getUserStmt = db.prepare(`
     WHERE student_id = ?
 `);
 
+const updatePasswordStmt = db.prepare(`
+    UPDATE users
+    SET password = ?
+    WHERE student_id = ?
+`);
+
 
 const registerUserAsync = promisify(registerUserStmt.run.bind(registerUserStmt));
 const getUserAsync = promisify(getUserStmt.get.bind(getUserStmt));
+const updatePasswordAsync = promisify(updatePasswordStmt.run.bind(updatePasswordStmt));
 
 
 async function registerUser(voterId, studentId, hashedPassword, role, email) {
@@ -26,10 +33,17 @@ async function getUser(studentId) {
 }
 
 
+async function updatePassword(studentId, newPassword) {
+    return updatePasswordAsync(newPassword, studentId);
+}
+
+
 module.exports = {
     registerUserStmt,
     getUserStmt,
+    updatePasswordStmt,
 
     registerUser,
-    getUser
+    getUser,
+    updatePassword
 };
