@@ -7,6 +7,10 @@ const router = express.Router();
 router.post('/register', authController.register);
 
 
+// Update password route
+router.put('/password', authController.updatePassword);
+
+
 // Login route
 router.post('/login', authController.login);
 
