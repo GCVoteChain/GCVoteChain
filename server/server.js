@@ -12,6 +12,7 @@ const electionModel = require('./models/electionModel');
 const voteModel = require('./models/voteModel');
 const transactionModel = require('./models/transactionModel');
 const logModel = require('./models/logModel');
+const db = require('./data/db');
 
 const app = express();
 
@@ -69,4 +70,7 @@ app.listen(PORT, () => {
   transactionModel.getTransactionStmt.finalize();
 
   logModel.addLogStmt.finalize();
+
+  db.close(checkForError);
+  process.exit();
 }));
