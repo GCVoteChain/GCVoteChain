@@ -1,17 +1,10 @@
+import React from "react";
 import "./css/Student.css"
 
  function Student (){
     return(
         <div className="bodies">
-   <header className = "navbar">
-    <div class="navbar-logo">Gardner College E-Voting</div>
-    <nav className="navbar-links">
-    <ul><li><a href="./Student">Dashboard</a></li>
-        <li><a href="./PartyList">Party Lists</a></li>
-        <li><a href="./Result">Results</a></li>
-        </ul>
-        </nav>
-   </header>
+   
 
  <section class="partylists">
 
@@ -73,6 +66,16 @@ import "./css/Student.css"
       </div>
 
     </section>
+
+    <header className = "navbar">
+    <div class="navbar-logo">Gardner College E-Voting</div>
+    <nav className="navbar-links">
+    <ul><li><a href="./Student">Dashboard</a></li>
+        <li><a href="./PartyList">Party Lists</a></li>
+        <li><a href="./Result">Results</a></li>
+        </ul>
+        </nav>
+   </header>
 
 </div>
 

@@ -14,12 +14,22 @@ function Login (){
                     <div className="input-box">
                         <input type="Password" placeholder="Password" required/>
                     </div>
-                   <div className="Button"><button type="submit">Login</button></div>
+                   <div className="Button"><button type="submit" onClick={enter()} >Login</button></div>
                 </form>
             </div>
         </div>
     )
 
 }
+function enter (){
+fetch(
+    '/login',
+{
+    method: 'POST',
+    headers: {'Content-Type' : 'application/json'},
+    body: JSON.stringify({})
+}
 
+)
+}
 export default Login;
