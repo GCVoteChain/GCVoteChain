@@ -13,7 +13,7 @@ const setTransactionStatusStmt = db.prepare(`
 `);
 
 const getTransactionStmt = db.prepare(`
-    SELECT * transactions
+    SELECT * FROM transactions
     WHERE tx_hash = ?
 `);
 

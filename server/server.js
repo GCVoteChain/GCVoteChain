@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs');
-const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 
 const routes = require('./routes/routes');
 
@@ -13,6 +13,7 @@ const voteModel = require('./models/voteModel');
 const transactionModel = require('./models/transactionModel');
 const logModel = require('./models/logModel');
 const db = require('./data/db');
+const { keccak256, toUtf8Bytes } = require('ethers');
 
 const app = express();
 
@@ -36,6 +37,40 @@ if (!fs.existsSync(envPath)) {
   }
 }
 
+
+(async function initializeUsers() {
+  const defaultUsers = [
+    {
+      username: 'admin1',
+      password: 'admin123',
+      role: 'admin'
+    },
+    {
+      username: 'admin2',
+      password: 'admin123',
+      role: 'admin'
+    }
+  ];
+
+  for (const user of defaultUsers) {
+    try {
+      const userExists = await userModel.getUser(user.username);
+  
+      if (!userExists) {
+        const hashedPassword = await bcrypt.hash(user.password, 10);
+        const voterId = keccak256(toUtf8Bytes(user.username + user.role));
+
+        await userModel.registerUser(voterId, user.username, hashedPassword, user.role, '');
+  
+        console.log(`Initialized user: ${user.username}`);
+      }
+    } catch (err) {
+      console.error('Failed to initialize users:', err);
+    }
+  }
+})();
+
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
@@ -43,7 +78,7 @@ app.listen(PORT, () => {
 
 
 ['SIGINT', 'SIGTERM', 'SIGQUIT']
-.forEach(signal => process.on(signal => {
+.forEach(signal => process.on(signal, () => {
   const checkForError = (err) => {
     if (err) console.error('Error:', err.message);
   };

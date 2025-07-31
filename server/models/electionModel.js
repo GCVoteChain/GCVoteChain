@@ -12,7 +12,7 @@ const setElectionScheduleStmt = db.prepare(`
     WHERE id = ?
 `);
 
-const setElectionStatusStmt = db.preprare(`
+const setElectionStatusStmt = db.prepare(`
     UPDATE elections
     SET status = ?
     WHERE id = ?
@@ -32,7 +32,7 @@ const addAsync = promisify(addElectionStmt.run.bind(addElectionStmt));
 const setScheduleAsync = promisify(setElectionScheduleStmt.run.bind(setElectionScheduleStmt));
 const setStatusAsync = promisify(setElectionStatusStmt.run.bind(setElectionStatusStmt));
 const removeAsync = promisify(removeElectionStmt.run.bind(removeElectionStmt));
-const getAllAsync = promisify(getElectionsStmt.all.bind(getElectionByIdStmt));
+const getAllAsync = promisify(getElectionsStmt.all.bind(getElectionsStmt));
 
 
 async function addElection(id, title) {
