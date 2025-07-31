@@ -13,8 +13,8 @@ async function register(req, res) {
         await userModel.registerUser(voterId, studentId, hashedPassword, role, email);
         res.send({ message: 'Registered successfully'});
     } catch (err) {
-        console.error('Registering error:', err);
-        res.status(500).send({ message: 'User already exists, Try another user.' });
+        console.error('Error registering:', err);
+        res.status(500).send({ message: 'Failed to register user' });
     }
 }
 

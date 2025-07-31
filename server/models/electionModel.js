@@ -1,0 +1,75 @@
+const db = require('../data/db')
+const { promisify } = require('util');
+
+const addElectionStmt = db.prepare(`
+    INSERT INTO elections (id, title)
+    VALUES (?, ?)
+`);
+
+const setElectionScheduleStmt = db.prepare(`
+    UPDATE elections
+    SET status = 'scheduled', start_time = ?, end_time = ?
+    WHERE id = ?
+`);
+
+const setElectionStatusStmt = db.preprare(`
+    UPDATE elections
+    SET status = ?
+    WHERE id = ?
+`);
+
+const removeElectionStmt = db.prepare(`
+    DELETE FROM elections
+    where id = ?
+`);
+
+const getElectionsStmt = db.prepare(`
+    SELECT * FROM elections
+`);
+
+
+const addAsync = promisify(addElectionStmt.run.bind(addElectionStmt));
+const setScheduleAsync = promisify(setElectionScheduleStmt.run.bind(setElectionScheduleStmt));
+const setStatusAsync = promisify(setElectionStatusStmt.run.bind(setElectionStatusStmt));
+const removeAsync = promisify(removeElectionStmt.run.bind(removeElectionStmt));
+const getAllAsync = promisify(getElectionsStmt.all.bind(getElectionByIdStmt));
+
+
+async function addElection(id, title) {
+    return addAsync(id, title);
+}
+
+
+async function setElectionSchedule(id, startTime, endTime) {
+    return setScheduleAsync(startTime, endTime, id);
+}
+
+
+async function setElectionStatus(id, status) {
+    return setStatusAsync(status, id);
+}
+
+
+async function removeElection(id) {
+    return removeAsync(id);
+}
+
+
+async function getAllElections() {
+    return getAllAsync() || [];
+}
+
+
+module.exports = {
+    addElectionStmt,
+    setElectionScheduleStmt,
+    setElectionStatusStmt,
+    removeElectionStmt,
+    getElectionsStmt,
+
+    addElection,
+    setElectionSchedule,
+    setElectionStatus,
+    removeElection,
+    getAllElections,
+};

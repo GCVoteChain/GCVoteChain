@@ -6,6 +6,11 @@ const crypto = require('crypto');
 
 const routes = require('./routes/routes');
 
+const userModel = require('./models/userModel');
+const candidateModel = require('./models/candidateModel');
+const electionModel = require('./models/electionModel');
+const voteModel = require('./models/voteModel');
+
 const app = express();
 
 // Middleware
@@ -30,4 +35,30 @@ if (!fs.existsSync(envPath)) {
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
-})
+});
+
+
+
+['SIGINT', 'SIGTERM', 'SIGQUIT']
+.forEach(signal => process.on(signal => {
+  const checkForError = (err) => {
+    if (err) console.error('Error:', err.message);
+  };
+
+  userModel.getUserStmt.finalize();
+  userModel.registerUserStmt.finalize();
+
+  candidateModel.getAllCandidatesStmt.finalize();
+  candidateModel.insertCandidateStmt.finalize();
+  candidateModel.removeCandidateStmt.finalize();
+  candidateModel.updateCandidateStmt.finalize();
+  
+  electionModel.addElectionStmt.finalize();
+  electionModel.getElectionsStmt.finalize();
+  electionModel.removeElectionStmt.finalize();
+  electionModel.setElectionScheduleStmt.finalize();
+  electionModel.setElectionStatusStmt.finalize();
+
+  voteModel.addVoteStmt.finalize();
+  voteModel.getVoteStmt.finalize();
+}));

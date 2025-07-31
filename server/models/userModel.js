@@ -1,16 +1,35 @@
 const db = require('../data/db');
 const { promisify } = require('util');
 
+const registerUserStmt = db.prepare(`
+    INSERT INTO users (voter_id, student_id, password, role, email, has_voted)
+    VALUES (?, ?, ?, ?, ?, ?)
+`);
+
+const getUserStmt = db.prepare(`
+    SELECT * FROM users
+    WHERE student_id = ?
+`);
+
+
+const registerUserAsync = promisify(registerUserStmt.run.bind(registerUserStmt));
+const getUserAsync = promisify(getUserStmt.get.bind(getUserStmt));
+
+
 async function registerUser(voterId, studentId, hashedPassword, role, email) {
-    const run = promisify(db.run.bind(db));
-    return run(`INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)`, [voterId, studentId, hashedPassword, role, email, 0]);
+    return registerUserAsync(voterId, studentId, hashedPassword, role, email, 0);
 }
 
 
-async function getUser(name) {
-    const get = promisify(db.get.bind(db));
-    return get(`SELECT * FROM users WHERE student_id = ?`, [name]);
+async function getUser(studentId) {
+    return getUserAsync(studentId)
 }
 
 
-module.exports = { registerUser, getUser };
+module.exports = {
+    registerUserStmt,
+    getUserStmt,
+
+    registerUser,
+    getUser
+};
