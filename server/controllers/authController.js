@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const { keccak256, toUtf8Bytes } = require('ethers');
+const { keccak256, solidityPacked } = require('ethers');
 const userModel = require('../models/userModel.js');
 
 
@@ -8,7 +8,7 @@ async function register(req, res) {
         const { studentId, password, email, role } = req.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const voterId = keccak256(toUtf8Bytes(studentId + email + role));
+        const voterId = keccak256(solidityPacked(['string', 'string', 'string'], [studentId, email, role]));
         
         await userModel.registerUser(voterId, studentId, hashedPassword, role, email);
         res.send({ message: 'Registered successfully'});

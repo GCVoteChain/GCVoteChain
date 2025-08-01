@@ -1,9 +1,12 @@
+const { keccak256, solidityPacked } = require('ethers');
 const electionModel = require('../models/electionModel.js');
 
 
 async function add(req, res) {
     try {
-        const { id, title } = req.body;
+        const { title } = req.body;
+        const timestamp = Math.floor(Date.now() / 1000);
+        const id = keccak256(solidityPacked(['string', 'uint256'], [title, timestamp]));
 
         await electionModel.addElection(id, title);
 
