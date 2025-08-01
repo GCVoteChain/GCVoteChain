@@ -13,7 +13,11 @@ const voteModel = require('./models/voteModel');
 const transactionModel = require('./models/transactionModel');
 const logModel = require('./models/logModel');
 const db = require('./data/db');
-const { keccak256, toUtf8Bytes } = require('ethers');
+
+const { keccak256, solidityPacked } = require('ethers');
+
+const { loadContracts } = require('./services/contract');
+
 
 const app = express();
 
@@ -58,7 +62,7 @@ if (!fs.existsSync(envPath)) {
   
       if (!userExists) {
         const hashedPassword = await bcrypt.hash(user.password, 10);
-        const voterId = keccak256(toUtf8Bytes(user.username + user.role));
+        const voterId = keccak256(solidityPacked(['string', 'string'], [user.username, user.role]));
 
         await userModel.registerUser(voterId, user.username, hashedPassword, user.role, '');
   
@@ -67,6 +71,15 @@ if (!fs.existsSync(envPath)) {
     } catch (err) {
       console.error('Failed to initialize users:', err);
     }
+  }
+})();
+
+
+(async function initializeContracts() {
+  try {
+    await loadContracts();
+  } catch (err) {
+    console.error('Error loading contracts:', err);
   }
 })();
 
