@@ -50,7 +50,7 @@ async function createContract(contractPath, wallet, ...args) {
         return contractAddress;
     }).catch(console.error);
 
-    const electionManagerAddress = await createContract(electionManagerPath, wallet, adminManagerAddress).then(async function(contract) {
+    const electionManagerAddress = await createContract(electionManagerPath, wallet, adminManagerAddress, voterManagerAddress).then(async function(contract) {
         const contractAddress = await contract.getAddress();
         env += `ELECTION_MANAGER_ADDRESS=${contractAddress}\n`;
         return contractAddress;
