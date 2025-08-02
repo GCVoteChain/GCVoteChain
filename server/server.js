@@ -3,7 +3,9 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const routes = require('./routes/routes');
 
@@ -30,12 +32,18 @@ const PORT = 8008;
 
 const envPath = path.join(__dirname, '.env');
 if (!fs.existsSync(envPath)) {
-  fs.writeFileSync(envPath, `PORT=${PORT}\n`);
+  fs.writeFileSync(envPath, `PORT=${PORT}\nJWT_TOKEN=${crypto.randomBytes(64).toString('hex')}`);
 } else {
   const envFile = fs.readFileSync(envPath, 'utf8');
-  const alreadyExists = envFile.split('\n').some(l => l.trim().startsWith('PORT='));
-  if (!alreadyExists) {
+
+  const portExists = envFile.split('\n').some(l => l.trim().startsWith('PORT='));
+  if (!portExists) {
     fs.appendFileSync(envPath, `PORT=${PORT}\n`);
+  }
+
+  const tokenExists = envFile.split('\n').some(l => l.trim().startsWith('JWT_TOKEN='));
+  if (!tokenExists) {
+    fs.appendFileSync(envPath, `JWT_TOKEN=${crypto.randomBytes(64).toString('hex')}\n`);
   }
 }
 
