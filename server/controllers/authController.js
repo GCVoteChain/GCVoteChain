@@ -2,6 +2,10 @@ const bcrypt = require('bcryptjs');
 const { keccak256, solidityPacked } = require('ethers');
 const userModel = require('../models/userModel.js');
 
+const jwt = require('jsonwebtoken');
+
+require('dotenv').config();
+
 
 async function register(req, res) {
     try {
@@ -28,7 +32,13 @@ async function login(req, res) {
 
         const match = await bcrypt.compare(password, user.password);
         if (match) {
-            res.send({ message: 'Login successfully!' });
+            const token = jwt.sign(
+                { voter_id: user.voter_id, role: user.role },
+                process.env.JWT_TOKEN,
+                { expiresIn: '1h' }
+            );
+
+            res.send({ token, message: 'Login successfully!' });
         } else {
             res.status(401).send({ message: 'Incorrect username/password' });
         }

@@ -1,14 +1,15 @@
 const express = require('express');
 const authController = require('../controllers/authController');
+const { authenticateToken, authenticateRole } = require('./authenticator');
 
 const router = express.Router();
 
 // Register route
-router.post('/register', authController.register);
+router.post('/register', authenticateToken, authenticateRole('admin'), authController.register);
 
 
 // Update password route
-router.put('/update-password', authController.updatePassword);
+router.put('/update-password', authenticateToken, authenticateRole('voter', 'admin'), authController.updatePassword);
 
 
 // Login route
