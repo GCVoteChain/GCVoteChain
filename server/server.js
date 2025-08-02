@@ -56,13 +56,13 @@ if (!fs.existsSync(envPath)) {
 
   for (const user of defaultUsers) {
     try {
-      const userExists = await userModel.getUser(user.username);
+      const userExists = await models.user.getUser(user.username);
   
       if (!userExists) {
         const hashedPassword = await bcrypt.hash(user.password, 10);
         const voterId = keccak256(solidityPacked(['string', 'string'], [user.username, user.role]));
 
-        await userModel.registerUser(voterId, user.username, hashedPassword, user.role, '');
+        await models.user.registerUser(voterId, user.username, hashedPassword, user.role, '');
   
         console.log(`Initialized user: ${user.username}`);
       }
