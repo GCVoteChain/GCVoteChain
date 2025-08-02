@@ -2,8 +2,6 @@
 
 function Candidate () {
     return (
-
-
     <div className="bodies">
         
 
@@ -20,8 +18,6 @@ function Candidate () {
    </div>
 
     )
- 
-
 }
 
 export default Candidate;

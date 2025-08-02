@@ -10,15 +10,10 @@
 }
 
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #2870b8;
-  color: rgb(230, 242, 243);
-  padding: 15px 30px; 
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+
 }
 
 .navbar-logo {
@@ -72,6 +67,7 @@
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  height: 100%;
 }
 
 .partylist-card h2 {

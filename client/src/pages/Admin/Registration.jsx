@@ -1,28 +1,28 @@
-
+import './css/registration.css'
 
 function Registration() {
     return( 
     <div className="bodies">
-        <div className="wrapper">
+        <div className="wrapper2">
         <form action="">
             <h1>Register</h1>
             <div className="input-box">
                 <input type="text" placeholder="Name" required/>
                 <input type="Password" placeholder="Password" required/>
-                       
-                            </div>
-                    
+                <input type="email" placeholder="Email" required/>  
+             <button type="submit"> Register</button>       
+            </div>
         </form>
         </div>
 
-   <header className = "navbar">
+   <footer className = "navbar">
+     <li><a href="./Registration">Registration</a></li>
+    </footer>
     <nav className="navbar-links">
     <ul><li><a href="./Voting">Voting</a></li>
         <li><a href="./Candidate">Candidate</a></li>
-        <li><a href="./Registration">Registration</a></li>
         </ul>
         </nav>
-   </header>
    </div>
 
     )

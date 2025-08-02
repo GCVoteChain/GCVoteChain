@@ -22,7 +22,7 @@ function App() {
       <Route path="/Registration" element={<Registration/>}/>
       <Route path="/Candidate" element={<Candidate/>}/>
       
-    </Routes>
+    </Routes> 
   )
 
 
