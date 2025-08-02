@@ -8,7 +8,7 @@ router.post('/register', authController.register);
 
 
 // Update password route
-router.put('/password', authController.updatePassword);
+router.put('/update-password', authController.updatePassword);
 
 
 // Login route
