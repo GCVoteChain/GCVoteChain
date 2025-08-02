@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
@@ -25,6 +26,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../client/build')));
+app.use(cors());
 
 app.use(routes);
 
@@ -78,6 +80,7 @@ if (!fs.existsSync(envPath)) {
 (async function initializeContracts() {
   try {
     await loadContracts();
+    console.log('Smart contracts loaded');
   } catch (err) {
     console.error('Error loading contracts:', err);
   }

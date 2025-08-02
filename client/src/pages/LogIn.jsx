@@ -1,46 +1,46 @@
-import "./css/Login.css"
-import { useState } from "react"
+import "./css/Login.css";
+import { useState } from "react";
 
 
 function Login (){
-    const [user,setuser] = useState ("")
-    const [pass,setpass] = useState ("")
-    const changeuser = event => {
-        setuser (event.target.value)
-    }
+    const [user, setUser] = useState ('')
+    const [pass, setPass] = useState ('')
+    const [loginStatus, setLoginStatus] = useState('');
 
-    const changepass = event => {
-        setpass (event.target.value)
-    }
+    const handleLogin = async(e) => {
+        e.preventDefault();
 
-    const enter =  () => {
-        fetch(
-            'http://localhost:8008/api/auth/login',
-            {
-                method:'POST',
-                headers:{'Content-Type': 'application/json' },
-                body: JSON.stringify({ studentId: user , password: pass})
-            }
-            
-        )
-        .catch(err=> console.error('Erro loging in',err.message));
-         
+        if (user.trim() && pass.trim()) {
+            const res = await fetch(
+                '/api/auth/login',
+                {
+                    method:'POST',
+                    headers:{'Content-Type': 'application/json' },
+                    body: JSON.stringify({ studentId: user , password: pass})
+                }
+            )
+            .then(res => res.json())
+            .catch(err=> console.error('Erro loging in',err.message));
+    
+            setLoginStatus(res.message);
+        }
     }
 
     return(
         <div className="body">
             <div className="wrapper">
                 <div className="form-box login"></div>
-                <form action="">
+                <form onSubmit={handleLogin}>
                     <h1>Login</h1>
                     <div className="input-box">
-                        <input type="text" placeholder="Username" onChange={changeuser} value={user} required/>
+                        <input type="text" placeholder="Student ID" onChange={event => setUser(event.target.value)} value={user} required/>
                     </div>
                     <div className="input-box">
-                        <input type="Password" placeholder="Password" onChange={changepass} value={pass} required/>
+                        <input type="Password" placeholder="Password" onChange={event => setPass(event.target.value)} value={pass} required/>
                     </div>
-                   <div className="Button"><button type="submit" onClick={enter()} >Login</button></div>
+                   <div className="Button"><button type="submit">Login</button></div>
                 </form>
+                <p id="loginStatus" style={{ textAlign: 'center', marginTop: '25px', color: 'black' }}>{loginStatus}</p>
             </div>
         </div>
     )
