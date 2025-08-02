@@ -7,12 +7,8 @@ const bcrypt = require('bcryptjs');
 
 const routes = require('./routes/routes');
 
-const userModel = require('./models/userModel');
-const candidateModel = require('./models/candidateModel');
-const electionModel = require('./models/electionModel');
-const voteModel = require('./models/voteModel');
-const transactionModel = require('./models/transactionModel');
-const logModel = require('./models/logModel');
+const models = require('./models/models');
+
 const db = require('./data/db');
 
 const { keccak256, solidityPacked } = require('ethers');
@@ -99,28 +95,7 @@ app.listen(PORT, () => {
     if (err) console.error('Error:', err.message);
   };
 
-  userModel.getUserStmt.finalize();
-  userModel.registerUserStmt.finalize();
-
-  candidateModel.getAllCandidatesStmt.finalize();
-  candidateModel.insertCandidateStmt.finalize();
-  candidateModel.removeCandidateStmt.finalize();
-  candidateModel.updateCandidateStmt.finalize();
-  
-  electionModel.addElectionStmt.finalize();
-  electionModel.getElectionsStmt.finalize();
-  electionModel.removeElectionStmt.finalize();
-  electionModel.setElectionScheduleStmt.finalize();
-  electionModel.setElectionStatusStmt.finalize();
-
-  voteModel.addVoteStmt.finalize();
-  voteModel.getVoteStmt.finalize();
-
-  transactionModel.addTransactionStmt.finalize();
-  transactionModel.setTransactionStatusStmt.finalize();
-  transactionModel.getTransactionStmt.finalize();
-
-  logModel.addLogStmt.finalize();
+  models.finalize();
 
   db.close(checkForError);
   process.exit();
