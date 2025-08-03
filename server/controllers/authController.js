@@ -4,8 +4,6 @@ const userModel = require('../models/userModel.js');
 
 const jwt = require('jsonwebtoken');
 
-require('dotenv').config();
-
 
 async function register(req, res) {
     try {

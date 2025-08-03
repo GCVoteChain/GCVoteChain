@@ -1,36 +1,30 @@
-.login {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0;
-    height: 100vh;
-    background-color: #f0f4f8;
+.layout-main-center-div {
+    max-width: 500px;
 }
 
-.login-form {
+
+.registration-form {
     max-width: 500px;
     border-radius: 20px;
     margin: 40px auto;
     padding: 30px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    background-color: #fff;
-    width: 100%;
 }
 
 
-.login-form h1 {
+.registration-form h2 {
     text-align: center;
     margin-bottom: 20px;
     color: #333;
 }
 
 
-.login-form-input-box {
+.registration-form-input-box {
     margin-bottom: 15px;
 }
 
 
-.login-form-input-box input {
+.registration-form-input-box input {
     width: 100%;
     padding: 10px;
     font-size: 1rem;
@@ -42,19 +36,19 @@
 }
 
 
-.login-form-input-box input:focus {
+.registration-form-input-box input:focus {
     border-color: #0056be;
     outline: none;
 }
 
 
-.login-form-submit {
+.registration-form-submit {
     display: flex;
     justify-content: center;
 }
 
 
-.login-form-submit button {
+.registration-form-submit button {
     padding: 12px 24px;
     font-size: 1.1rem;
     background-color: #0056be;
@@ -65,29 +59,12 @@
 }
 
 
-.login-form-submit button:hover {
+.registration-form-submit button:hover {
     background-color: #004aa3;
 }
 
 
-.login-form-submit button:disabled {
+.registration-form-submit button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
-}
-
-
-#login-form-login-status {
-    text-align: center;
-    margin-top: 25px;
-    color: black;
-}
-
-
-#login-form-login-status.success {
-    color: #28a745;
-}
-
-
-#login-form-login-status.error {
-    color: #dc3545;
 }
