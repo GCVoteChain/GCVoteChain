@@ -2,8 +2,8 @@ const db = require('../data/db');
 const { promisify } = require('util');
 
 const registerUserStmt = db.prepare(`
-    INSERT INTO users (voter_id, student_id, password, role, email)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO users (voter_id, student_id, password, name, email, role)
+    VALUES (?, ?, ?, ?, ?, ?)
 `);
 
 const getUserStmt = db.prepare(`
@@ -23,8 +23,8 @@ const getUserAsync = promisify(getUserStmt.get.bind(getUserStmt));
 const updatePasswordAsync = promisify(updatePasswordStmt.run.bind(updatePasswordStmt));
 
 
-async function registerUser(voterId, studentId, hashedPassword, role, email) {
-    return registerUserAsync(voterId, studentId, hashedPassword, role, email);
+async function registerUser(voterId, studentId, hashedPassword, name, email, role) {
+    return registerUserAsync(voterId, studentId, hashedPassword, name, email, role);
 }
 
 

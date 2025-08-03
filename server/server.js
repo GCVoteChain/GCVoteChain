@@ -59,12 +59,14 @@ app.use(routes);
     {
       username: 'admin1',
       password: 'admin123',
-      role: 'admin'
+      role: 'admin',
+      name: 'admin1'
     },
     {
       username: 'admin2',
       password: 'admin123',
-      role: 'admin'
+      role: 'admin',
+      name: 'admin2'
     }
   ];
 
@@ -76,7 +78,7 @@ app.use(routes);
         const hashedPassword = await bcrypt.hash(user.password, 10);
         const voterId = keccak256(solidityPacked(['string', 'string'], [user.username, user.role]));
 
-        await models.user.registerUser(voterId, user.username, hashedPassword, user.role, '');
+        await models.user.registerUser(voterId, user.username, hashedPassword, user.name, '', user.role);
   
         console.log(`Initialized user: ${user.username}`);
       }

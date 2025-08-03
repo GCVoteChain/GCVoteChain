@@ -31,7 +31,7 @@ async function login(req, res) {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
             const token = jwt.sign(
-                { voter_id: user.voter_id, role: user.role },
+                { voter_id: user.voter_id, name: user.name, role: user.role },
                 process.env.JWT_TOKEN,
                 { expiresIn: '1h' }
             );

@@ -12,8 +12,9 @@ db.exec(`
     voter_id TEXT PRIMARY KEY,
     student_id TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
-    role TEXT NOT NULL CHECK (role IN ('voter', 'admin')),
+    name TEXT NOT NULL,
     email TEXT NOT NULL
+    role TEXT NOT NULL CHECK (role IN ('voter', 'admin')),
   );
   
   CREATE TABLE IF NOT EXISTS elections (
