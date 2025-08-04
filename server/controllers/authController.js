@@ -7,12 +7,13 @@ const jwt = require('jsonwebtoken');
 
 async function register(req, res) {
     try {
-        const { studentId, password, email, role } = req.body;
+        const { studentId, password, name, email, role } = req.body;
+        console.log(req.body);
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const voterId = keccak256(solidityPacked(['string', 'string', 'string'], [studentId, email, role]));
         
-        await userModel.registerUser(voterId, studentId, hashedPassword, role, email);
+        await userModel.registerUser(voterId, studentId, hashedPassword, name, email, role);
         res.send({ message: 'Registered successfully'});
     } catch (err) {
         console.error('Error registering:', err);
