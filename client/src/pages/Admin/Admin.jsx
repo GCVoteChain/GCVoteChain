@@ -1,20 +1,48 @@
+import './css/Admin.css';
+import Layout from '../Layout';
+import { jwtDecode } from 'jwt-decode';
+import { useEffect, useState } from 'react';
+import useAuth from '../../hooks/auth';
+import { useNavigate } from 'react-router-dom';
 
 
 function Admin () {
- return(
-    <div className="bodies">
-   <header className = "navbar">
-    <div class="navbar-logo">Gardner College E-Voting Admin Dashboard</div>
-    <nav className="navbar-links">
-    <ul><li><a href="./Voting">Voting</a></li>
-        <li><a href="./Candidate">Candidate</a></li>
-        <li><a href="./Registration">Registration</a></li>
-        </ul>
-        </nav>
-   </header>
-   </div>
- )
+  const [name, setName] = useState('');
 
+  const navigate = useNavigate();
+
+  useAuth();
+  
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      navigate('/');
+      return;
+    }
+    
+    const decoded = jwtDecode(token);
+    setName(decoded.name);
+  }, [navigate]);
+
+  
+  return(
+    <Layout
+      headerContent={'Gardner College E-Voting Admin Dashboard'}
+      mainContent={
+        <div className='admin-dashboard'>
+          <h2>Welcome back, {name}</h2>
+        </div>
+      }
+      footerContent={
+        <ul>
+          <li><a href="/admin/registration">Registration</a></li>
+          <li><a href="/admin/election">Election</a></li>
+          <li><a href="/admin/candidates">Candidates</a></li>
+          <li><a href="/settings">Settings</a></li>
+        </ul>
+      }
+    ></Layout>
+  )
 }
 
 export default Admin;

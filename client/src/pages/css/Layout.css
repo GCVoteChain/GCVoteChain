@@ -17,6 +17,11 @@ body {
 
 
 .layout-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
     background-color: #007BFF;
     color: white;
     padding: 10px;
@@ -26,6 +31,11 @@ body {
 
 
 .layout-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -43,6 +53,9 @@ body {
 
 .layout-main {
     flex-grow: 1;
+    margin-top: 60px;
+    margin-bottom: 60px;
+    overflow-y: auto;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -58,23 +71,50 @@ body {
 }
 
 
+.layout-footer {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
 .layout-footer ul {
     display: flex;
     list-style: none;
-    padding: 0;
+    padding: 0 10px;
     margin: 0;
     width: 100%;
     gap: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    scrollbar-width: thin;
+}
+
+
+.layout-footer ul::-webkit-scrollbar {
+    height: 6px;
+}
+
+
+.layout-footer ul::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+.layout-footer ul::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 3px;
 }
 
 
 .layout-footer ul li {
     display: flex;
+    flex: 0 0 auto;
     flex-grow: 1;
     justify-content: center;
     font-size: 1.1rem;
     position: relative;
-    padding-right: 10px;
+    padding-right: 0;
 }
 
 
@@ -84,7 +124,9 @@ body {
 
 
 .layout-footer ul li a {
-    padding: 15px 20px;
+    display: inline-block;
+    white-space: nowrap;
+    padding: 10px 15px;
     color: white;
     text-decoration: none;
     border-radius: 5px;

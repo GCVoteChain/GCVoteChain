@@ -12,10 +12,12 @@ function Login (){
     const [pass, setPass] = useState ('');
     const [loginStatus, setLoginStatus] = useState('');
 
+    const isFormValid = user.trim() !== '' && pass.trim() !== '';
+
     const handleLogin = async(e) => {
         e.preventDefault();
 
-        if (user.trim() && pass.trim()) {
+        if (isFormValid) {
             const res = await fetch(
                 '/api/auth/login',
                 {
@@ -34,7 +36,9 @@ function Login (){
 
                 const decoded = jwtDecode(data.token);
 
-                navigate(`/${decoded.role}` || '/student');
+                if (decoded.role === 'admin') navigate('/admin');
+                else if (decoded.role === 'voter') navigate('/student');
+                else setLoginStatus('Something went wrong. Try again later.');
             }
         }
     }
@@ -50,7 +54,7 @@ function Login (){
                     <div className="login-form-input-box">
                         <input type="Password" placeholder="Password" onChange={event => setPass(event.target.value)} value={pass} required/>
                     </div>
-                    <div className="login-form-submit"><button type="submit">Login</button></div>
+                    <div className="login-form-submit"><button type="submit" disabled={!isFormValid}>Login</button></div>
                 </form>
                 <p id="login-form-login-status" style={{ textAlign: 'center', marginTop: '25px', color: 'black' }}>
                     {loginStatus}

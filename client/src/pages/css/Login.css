@@ -81,13 +81,3 @@
     margin-top: 25px;
     color: black;
 }
-
-
-#login-form-login-status.success {
-    color: #28a745;
-}
-
-
-#login-form-login-status.error {
-    color: #dc3545;
-}

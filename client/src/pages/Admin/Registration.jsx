@@ -1,14 +1,55 @@
 import './css/Registration.css'
 import { useState } from 'react';
 import Layout from '../Layout';
+import { useNavigate } from 'react-router-dom';
+
+import useAuth from '../../hooks/auth';
+
 
 function Registration() {
+    const navigate = useNavigate();
+    
     const [id, setID] = useState('');
     const [pass, setPass] = useState('');
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+
+    useAuth();
+
+    const isFormValid = id.trim() !== '' && pass.trim() !== '' && email.trim() !== '';
 
     const registerHandler = async(e) => {
         e.preventDefault();
+
+        if (isFormValid) {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                navigate('/');
+                return;
+            }
+            
+            const res = await fetch(
+                '/api/auth/register',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        studentId: id,
+                        password: pass,
+                        name: name,
+                        email: email,
+                        role: 'voter'
+                    })
+                }
+            );
+
+            if (!res.ok) {
+                console.log('Failed to register new voter');
+            }
+        }
     }
     
     return(
@@ -25,19 +66,23 @@ function Registration() {
                             <input type='Password' placeholder='Password' onChange={event => setPass(event.target.value)} value={pass}required/>
                         </div>
                         <div className='registration-form-input-box'>
+                            <input type='text' placeholder='Nickname' onChange={event => setName(event.target.value)} value={name}required/>
+                        </div>
+                        <div className='registration-form-input-box'>
                             <input type='email' placeholder='Email' onChange={event => setEmail(event.target.value)} value={email}required/>
                         </div>
                         <div className='registration-form-submit'>
-                            <button type='submit'> Register</button>       
+                            <button type='submit' disabled={!isFormValid}> Register</button>       
                         </div>
                     </form>
                 </div>
             }
             footerContent={
                 <ul>
-                    <li><a href='./Registration'>Registration</a></li>
-                    <li><a href='./Voting'>Voting</a></li>
-                    <li><a href='./Candidate'>Candidate</a></li>
+                    <li><a href='/admin/registration'>Registration</a></li>
+                    <li><a href='/admin/election'>Election</a></li>
+                    <li><a href='/admin/candidates'>Candidates</a></li>
+                    <li><a href='/settings'>Settings</a></li>
                 </ul>
         }></Layout>
     )
