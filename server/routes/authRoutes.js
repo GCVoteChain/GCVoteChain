@@ -6,8 +6,13 @@ const { authenticateToken, authenticateRole } = require('./authenticator');
 const router = express.Router();
 
 
-router.post('/', authenticateToken, (req, res) => {
-    res.send({ message: 'Token authorized!' });
+router.post('/voter', authenticateToken, authenticateRole('voter'), (req, res) => {
+    res.send({ message: 'Voter token authorized!' });
+});
+
+
+router.post('/admin', authenticateToken, authenticateRole('admin'), (req, res) => {
+    res.send({ message: 'Admin token authorized!' });
 });
 
 
