@@ -60,15 +60,19 @@ function Registration() {
                     <h2>Voter Information</h2>
                     <form onSubmit={registerHandler}>
                         <div className='registration-form-input-box'>
+                            <label>Student ID:</label>
                             <input type='text' placeholder='Student ID' onChange={event => setID(event.target.value)} value={id}required/>
                         </div>
                         <div className='registration-form-input-box'>
+                            <label>Password:</label>
                             <input type='Password' placeholder='Password' onChange={event => setPass(event.target.value)} value={pass}required/>
                         </div>
                         <div className='registration-form-input-box'>
+                            <label>Nickname</label>
                             <input type='text' placeholder='Nickname' onChange={event => setName(event.target.value)} value={name}required/>
                         </div>
                         <div className='registration-form-input-box'>
+                            <label>Email</label>
                             <input type='email' placeholder='Email' onChange={event => setEmail(event.target.value)} value={email}required/>
                         </div>
                         <div className='registration-form-submit'>
