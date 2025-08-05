@@ -49,9 +49,11 @@ function Login (){
                 <h1>Login</h1>
                 <form onSubmit={handleLogin}>
                     <div className="login-form-input-box">
+                        <label>Student ID:</label>
                         <input type="text" placeholder="ID" onChange={event => setUser(event.target.value)} value={user} required/>
                     </div>
                     <div className="login-form-input-box">
+                        <label>Password:</label>
                         <input type="Password" placeholder="Password" onChange={event => setPass(event.target.value)} value={pass} required/>
                     </div>
                     <div className="login-form-submit"><button type="submit" disabled={!isFormValid}>Login</button></div>
