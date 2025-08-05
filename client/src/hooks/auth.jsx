@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 
-function useAuth() {
+function useAuth(role) {
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -16,13 +16,13 @@ function useAuth() {
 
             try {
                 const res = await fetch(
-                    '/api/auth/',
+                    `/api/auth/${role}`,
                     {
-                    method: 'POST',
-                    headers: {
-                        'authorization': `Bearer ${token}`,
-                        'Content-type': 'application/json',
-                    }
+                        method: 'POST',
+                        headers: {
+                            'authorization': `Bearer ${token}`,
+                            'Content-type': 'application/json',
+                        }
                     }
                 );
 
@@ -35,7 +35,7 @@ function useAuth() {
                 return;
             }
     })();
-    }, [navigate]);
+    }, [navigate, role]);
 }
 
 

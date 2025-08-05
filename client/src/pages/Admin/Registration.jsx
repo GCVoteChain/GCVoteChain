@@ -14,7 +14,7 @@ function Registration() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
 
-    useAuth();
+    useAuth('admin');
 
     const isFormValid = id.trim() !== '' && pass.trim() !== '' && email.trim() !== '';
 

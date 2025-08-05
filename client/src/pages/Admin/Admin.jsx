@@ -11,7 +11,7 @@ function Admin () {
 
   const navigate = useNavigate();
 
-  useAuth();
+  useAuth('admin');
   
   useEffect(() => {
     const token = localStorage.getItem('authToken');
