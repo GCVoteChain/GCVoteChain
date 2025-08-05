@@ -1,7 +1,7 @@
 import './css/Admin.css';
 import Layout from '../Layout';
 import { jwtDecode } from 'jwt-decode';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useAuth from '../../hooks/auth';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,16 +12,22 @@ function Admin () {
   const navigate = useNavigate();
 
   useAuth('admin');
+
+  const effectRan = useRef(false);
   
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      navigate('/');
-      return;
+    if (!effectRan.current) {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        navigate('/');
+        return;
+      }
+      
+      const decoded = jwtDecode(token);
+      setName(decoded.name);
     }
-    
-    const decoded = jwtDecode(token);
-    setName(decoded.name);
+
+    effectRan.current = true;
   }, [navigate]);
 
   
