@@ -12,7 +12,6 @@ import Admin from "./pages/Admin/Admin";
 import VoterRegistration from "./pages/Admin/Registration";
 import AdminCandidate from "./pages/Admin/Candidates";
 import AdminElection from "./pages/Admin/Election";
-import AdminCreateElection from './pages/Admin/CreateElection';
 
 
 function App() {
@@ -28,7 +27,6 @@ function App() {
       <Route path="/admin/registration" element={<VoterRegistration/>}/>
       <Route path="/admin/candidates" element={<AdminCandidate/>}/>
       <Route path="/admin/elections" element={<AdminElection/>}/>
-      <Route path="/admin/elections/create" element={<AdminCreateElection/>}/>
 
       <Route path="/settings" element={<Settings/>}/>
       <Route path="/results" element={<Result/>}/>

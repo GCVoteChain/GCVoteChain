@@ -1,0 +1,231 @@
+
+.layout-main-center-div {
+    width: 100%;
+}
+
+
+.elections {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+
+.elections p {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #999;
+    margin-top: 40px;
+}
+
+.elections-list {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+
+.election-item {
+    padding: 15px 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+.election-item:not(:last-child) {
+    border-bottom: 1px solid #ccc;
+}
+
+
+.election-item {
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+
+.election-item:hover {
+    background-color: #ccc;
+}
+
+
+.election-info {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+
+.election-info-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+
+.election-info-status {
+    font-size: 0.9em;
+    color: #666;
+}
+
+
+.elections-button-add {
+    position: absolute;
+    bottom: 80px;
+    right: 20px;
+    padding: 10px 15px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+
+.elections-button-add:hover {
+    background-color: #014292;
+}
+
+
+.elections-add-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+
+.elections-add-modal-form {
+    position: relative;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+}
+
+
+.elections-add-modal-form-close {
+    position: absolute;
+    top: 2px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+
+.elections-add-modal-form-close:hover {
+    color: #ff3333;
+}
+
+
+.elections-add-modal-form-input-box {
+    margin-bottom: 15px;
+}
+
+
+.elections-add-modal-form-input-box input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+
+.elections-add-modal-form-input-box input:focus {
+    border-color: #0056be;
+    outline: none;
+}
+
+
+.elections-add-modal-form-submit button {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+.elections-add-modal-form-submit button:hover {
+    background-color: #0056be;
+}
+
+
+.elections-add-modal-form-submit button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+
+
+.elections-message-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+
+.elections-message-modal-div {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.elections-message-modal-div p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+
+.elections-message-modal-div button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+
+.elections-message-modal-div button:hover {
+    background-color: #0056be;
+}
