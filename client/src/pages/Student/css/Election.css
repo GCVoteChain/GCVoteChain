@@ -1,0 +1,18 @@
+.election-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+
+.election-info-name {
+    font-weight: bold;
+}
+
+
+.election-info-status {
+    font-size: 0.9em;
+    color: #666;
+}
