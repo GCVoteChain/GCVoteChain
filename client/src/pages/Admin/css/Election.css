@@ -4,6 +4,11 @@
 }
 
 
+.elections-footer {
+    width: 100%;
+}
+
+
 .elections {
     max-width: 800px;
     margin: 0 auto;
@@ -28,9 +33,27 @@
 
 
 .election-item {
-    padding: 15px 20px;
+    padding: 12px;
     width: 100%;
     box-sizing: border-box;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.election-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.election-item-time {
+    font-size: 0.85em;
+    color: #007bff;
+    margin-top: 5px;
 }
 
 
@@ -39,35 +62,32 @@
 }
 
 
-.election-item {
-    transition: background-color 0.3s ease;
-    cursor: pointer;
+.election-item:first-child {
+    border-radius: 10px 10px 0 0;
+}
+
+
+.election-item:last-child {
+    border-radius: 0 0 10px 10px;
 }
 
 
 .election-item:hover {
-    background-color: #ccc;
+    background-color: #9ecaff;
 }
 
 
-.election-info {
-    width: 100%;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-}
-
-
-.election-info-name {
+.election-item-name {
     font-weight: bold;
     font-size: 1.1rem;
     color: #333;
 }
 
 
-.election-info-status {
+.election-item-status {
     font-size: 0.9em;
-    color: #666;
+    color: #555;
+    white-space: nowrap;
 }
 
 
@@ -190,7 +210,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 1001;
 }
 
 
@@ -198,7 +218,8 @@
     background: white;
     padding: 20px;
     border-radius: 10px;
-    width: 300px;
+    width: auto;
+    max-width: 500px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -228,4 +249,276 @@
 
 .elections-message-modal-div button:hover {
     background-color: #0056be;
+}
+
+
+.elections-selected-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+
+.elections-selected-modal-form {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+
+.elections-selected-modal-form-close {
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+.elections-selected-modal-form-close:hover {
+    background-color: #0056be;
+}
+
+
+.selected-election-div-info {
+    margin-bottom: 20px;
+}
+
+
+.selected-election-div-info h1 {
+    margin: 5px;
+}
+
+
+.status {
+    font-weight: bold;
+}
+
+
+.status.draft {
+    color: grey;
+}
+
+
+.status.scheduled {
+    color: orange;
+}
+
+
+.status.open {
+    color: green;
+}
+
+
+.status.closed {
+    color: red;
+}
+
+
+.selected-election-div-candidates {
+    width: 90%;
+    padding: 0;
+    margin: 0;
+}
+
+
+.selected-election-div-candidates button {
+    width: 100%;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+.selected-election-div-candidates button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+
+.selected-election-div-schedule {
+    width: 90%;
+    padding: 0;
+    margin: 0;
+}
+
+
+.selected-election-div-schedule button {
+    width: 100%;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+.selected-election-candidates-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+
+.selected-election-candidates-modal-form {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 350px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+
+.selected-election-candidates-modal-form h2 {
+    margin-bottom: 20px;
+}
+
+
+.selected-election-div-candidates-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 20px;
+    width: 100%;
+}
+
+
+.selected-election-div-candidates-button button {
+    width: 100%;
+}
+
+
+.selected-election-candidates-modal-form-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 20px;
+}
+
+
+.selected-election-candidates-modal-form button {
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+.selected-election-candidates-modal-form-back {
+    margin-top: 25px;
+}
+
+
+.selected-election-time-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+
+.selected-election-time-modal-form {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 350px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+
+.selected-election-time-modal-form-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 20px;
+}
+
+
+.selected-election-time-modal-form-buttons button {
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+.selected-election-div-time input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+
+.selected-election-div-time input:focus {
+    border-color: #0056be;
+    outline: none;
 }

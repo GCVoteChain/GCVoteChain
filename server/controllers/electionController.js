@@ -22,7 +22,12 @@ async function setSchedule(req, res) {
     try {
         const { id, startTime, endTime } = req.body;
 
-        await electionModel.setElectionSchedule(id, startTime, endTime);
+        const start = Math.floor(new Date(startTime).getTime() / 1000);
+        const end = Math.floor(new Date(endTime).getTime() / 1000);
+
+        if (start > end) return res.status(400).send({ message: 'Start time must be before the end time' });
+
+        await electionModel.setElectionSchedule(id, start, end);
 
         res.send({ message: 'Election scheduled successfully' });
     } catch (err) {
