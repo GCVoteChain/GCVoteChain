@@ -11,7 +11,7 @@ import Voting from "./pages/Student/Voting";
 import Admin from "./pages/Admin/Admin";
 import VoterRegistration from "./pages/Admin/Registration";
 import AdminCandidate from "./pages/Admin/Candidates";
-import AdminElection from "./pages/Admin/Election";
+import AdminElection from "./pages/Admin/Elections";
 
 
 function App() {
