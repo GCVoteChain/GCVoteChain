@@ -28,9 +28,6 @@ function Election() {
     const [selectedElection, setSelectedElection] = useState({});
     const [showSelectedElectionModal, setShowSelectedElectionModal] = useState(false);
 
-    const [electionCandidates, setElectionCandidates] = useState([]);
-    const [showElectionCandidatesModal, setShowElectionCandidatesModal] = useState(false);
-
     const [electionStartTime, setElectionStartTime] = useState('');
     const [electionEndTime, setElectionEndTime] = useState('');
     const [showElectionTimeModal, setShowElectionTimeModal] = useState(false);
@@ -199,7 +196,7 @@ function Election() {
             setShowElectionTimeModal(false);
         }
     }
-    
+
     
     return(
         <Layout
@@ -276,7 +273,9 @@ function Election() {
                                 </div>
 
                                 <div className='selected-election-div-candidates'>
-                                    <button onClick={() => setShowElectionCandidatesModal(true)} disabled={selectedElection.status !== 'draft'}>Manage Candidates</button>
+                                    <button disabled={selectedElection.status !== 'draft'} onClick={() => {
+                                        navigate('/admin/candidates');
+                                    }}>Manage Candidates</button>
                                 </div>
 
                                 <div className='selected-election-div-schedule'>
@@ -290,28 +289,6 @@ function Election() {
                                         setShowElectionTimeModal(true);
                                     }}>Set Schedule</button>
                                 </div>
-
-                                {showElectionCandidatesModal && (
-                                    <div className='selected-election-candidates-modal'>
-                                        <div className='selected-election-candidates-modal-form'>
-                                            <h2>Manage Candidates</h2>
-                                            <div className='selected-election-div-candidates-button'>
-                                                <button>Add</button>
-                                            </div>
-                                            <div className='selected-election-div-candidates-button'>
-                                                <button>Edit</button>
-                                            </div>
-                                            <div className='selected-election-div-candidates-button'>
-                                                <button>Remove</button>
-                                            </div>
-                                            <div className='selected-election-candidates-modal-form-back'>
-                                                <button onClick={() => {
-                                                    setShowElectionCandidatesModal(false);
-                                                }}>Back</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
 
                                 {showElectionTimeModal && (
                                     <div className='selected-election-time-modal'>
