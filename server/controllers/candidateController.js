@@ -3,9 +3,11 @@ const candidateModel = require('../models/candidateModel.js');
 
 async function add(req, res) {
     try {
-        const { electionId, candidateId, name, position } = req.body;
+        const { studentId, electionId, name, position } = req.body;
 
-        await candidateModel.addCandidate(electionId, candidateId, name, position);
+        const candidateId = keccak256(solidityPacked(['string', 'string', 'string'], [electionId, studentId, position]));
+
+        await candidateModel.addCandidate(candidateId, studentId, electionId, name, position);
 
         res.send({ message: 'Candidate added successfully' });
     } catch (err) {
@@ -17,9 +19,9 @@ async function add(req, res) {
 
 async function update(req, res) {
     try {
-        const { electionId, candidateId, name, position } = req.body;
+        const { studentId, electionId, name, position } = req.body;
 
-        await candidateModel.updateCandidate(electionId, candidateId, name, position);
+        await candidateModel.updateCandidate(electionId, studentId, name, position);
 
         res.send({ message: 'Candidate updated successfully' });
     } catch (err) {
@@ -31,9 +33,9 @@ async function update(req, res) {
 
 async function remove(req, res) {
     try {
-        const { electionId, candidateId } = req.body;
+        const { electionId, studentId } = req.body;
 
-        await candidateModel.removeCandidate(electionId, candidateId);
+        await candidateModel.removeCandidate(electionId, studentId);
 
         res.send({ message: 'Candidate removed successfully' });
     } catch (err) {
@@ -45,9 +47,12 @@ async function remove(req, res) {
 
 async function get(req, res) {
     try {
-        const { electionId } = req.body;
+        const { electionId } = req.query;
+        if (electionId) {
+            return res.status(400).send({ message: 'Missing election ID'});
+        }
 
-        const candidates = await candidateModel.getCandidates(electionId);
+        const candidates = await candidateModel.getAllCandidates(electionId);
 
         res.send(candidates);
     } catch (err) {

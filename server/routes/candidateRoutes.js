@@ -5,10 +5,6 @@ const { authenticateToken, authenticateRole } = require('./authenticator.js');
 const router = express.Router();
 
 
-// Get all candidates route
-router.get('/', authenticateToken, authenticateRole('voter', 'admin'), candidateController.get);
-
-
 // New candidate route
 router.post('/add', authenticateToken, authenticateRole('admin'), candidateController.add);
 
@@ -22,7 +18,7 @@ router.delete('/remove', authenticateToken, authenticateRole('admin'), candidate
 
 
 // Get candidates for certain election route
-router.get('/get', authenticateToken, authenticateRole('voter', 'admin'), candidateController.get);
+router.get('/:electionId', authenticateToken, authenticateRole('voter', 'admin'), candidateController.get);
 
 
 module.exports = router;

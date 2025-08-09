@@ -16,6 +16,7 @@ function finalize() {
 
     election.addElectionStmt.finalize();
     election.getElectionsStmt.finalize();
+    election.getElectionByIdStmt.finalize();
     election.removeElectionStmt.finalize();
     election.setElectionScheduleStmt.finalize();
     election.setElectionStatusStmt.finalize();

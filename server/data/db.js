@@ -26,13 +26,14 @@ db.exec(`
   );
 
   CREATE TABLE IF NOT EXISTS candidates (
-    id TEXT NOT NULL,
+    id TEXT NOT NULL UNIQUE,
+    student_id NOT NULL UNIQUE,
     position TEXT NOT NULL,
     name TEXT NOT NULL,
     election_id TEXT NOT NULL,
     voteCount INTEGER NOT NULL DEFAULT 0,
-    PRIMARY KEY (id, election_id),
-    FOREIGN KEY (id) REFERENCES users(voter_id),
+    PRIMARY KEY (id, student_id, election_id),
+    FOREIGN KEY (student_id) REFERENCES users(student_id),
     FOREIGN KEY (election_id) REFERENCES elections(id)
   );
 

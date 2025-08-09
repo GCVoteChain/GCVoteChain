@@ -59,7 +59,6 @@ function Election() {
                     return;
                 } else if (res.ok) {
                     const data = await res.json();
-                    console.log(data);
     
                     setElections(data);
                 }
@@ -241,7 +240,7 @@ function Election() {
                                         <input type='text' value={newElectionName} placeholder='Election name' onChange={(e) => setNewElectionName(e.target.value)} required/>
                                     </div>
                                     <div className='elections-add-modal-form-submit'>
-                                        <button type='submit' disabled={!newElectionName.trim() !== ''}>Submit</button>
+                                        <button type='submit' disabled={newElectionName.trim() === ''}>Submit</button>
                                     </div>
                                 </form>
                             </div>
@@ -274,7 +273,7 @@ function Election() {
 
                                 <div className='selected-election-div-candidates'>
                                     <button disabled={selectedElection.status !== 'draft'} onClick={() => {
-                                        navigate('/admin/candidates');
+                                        navigate(`/admin/elections/${selectedElection.id}/candidates`);
                                     }}>Manage Candidates</button>
                                 </div>
 
@@ -337,7 +336,6 @@ function Election() {
                     <ul>
                         <li><a href="/admin/registration">Registration</a></li>
                         <li><a href="/admin/elections">Elections</a></li>
-                        <li><a href="/admin/candidates">Candidates</a></li>
                         <li><a href="/settings">Settings</a></li>
                     </ul>
                 </div>

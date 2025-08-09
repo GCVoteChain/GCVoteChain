@@ -1,3 +1,7 @@
+.layout-main {
+    align-items: center;
+}
+
 .layout-main-center-div {
     max-width: 500px;
 }

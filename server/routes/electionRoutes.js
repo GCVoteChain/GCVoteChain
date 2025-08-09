@@ -9,6 +9,10 @@ const router = express.Router();
 router.get('/', authenticateToken, authenticateRole('voter', 'admin'), electionController.getAll);
 
 
+// Get election route
+router.get('/:electionId', authenticateToken, authenticateRole('voter', 'admin'), electionController.get);
+
+
 // New election route
 router.post('/add', authenticateToken, authenticateRole('admin'), electionController.add);
 

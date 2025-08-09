@@ -77,10 +77,25 @@ async function getAll(req, res) {
 }
 
 
+async function get(req, res) {
+    try {
+        const { id } = req.query;
+        
+        const election = await electionModel.getById(id);
+
+        res.send(election);
+    } catch (err) {
+        console.error(`Error fetching election with ID: ${id}:`, err);
+        res.status(500).send({ message: 'Failed to get election' });
+    }
+}
+
+
 module.exports = {
     add,
     setSchedule,
     setStatus,
     remove,
-    getAll
+    getAll,
+    get
 }

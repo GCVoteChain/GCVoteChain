@@ -10,7 +10,7 @@ import Voting from "./pages/Student/Voting";
 
 import Admin from "./pages/Admin/Admin";
 import VoterRegistration from "./pages/Admin/Registration";
-import AdminCandidate from "./pages/Admin/Candidates";
+import AdminCandidates from "./pages/Admin/Candidates";
 import AdminElection from "./pages/Admin/Elections";
 
 
@@ -25,11 +25,13 @@ function App() {
       
       <Route path="/admin" element={<Admin/>}/>
       <Route path="/admin/registration" element={<VoterRegistration/>}/>
-      <Route path="/admin/candidates" element={<AdminCandidate/>}/>
       <Route path="/admin/elections" element={<AdminElection/>}/>
+      <Route path="/admin/elections/:electionId/candidates" element={<AdminCandidates/>}/>
 
       <Route path="/settings" element={<Settings/>}/>
       <Route path="/results" element={<Result/>}/>
+
+      <Route path='*' element={<h1>404 - Page Not Found</h1>}/>
     </Routes> 
   )
 }
