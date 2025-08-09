@@ -21,4 +21,8 @@ router.put('/update', authenticateToken, authenticateRole('admin'), candidateCon
 router.delete('/remove', authenticateToken, authenticateRole('admin'), candidateController.remove);
 
 
+// Get candidates for certain election route
+router.get('/get', authenticateToken, authenticateRole('voter', 'admin'), candidateController.get);
+
+
 module.exports = router;
