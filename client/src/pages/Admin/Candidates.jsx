@@ -131,10 +131,10 @@ function Candidates () {
                 }
             );
 
-            if (res.ok) {
-                const data = await res.json();
-                window.alert(data.message);
+            const data = await res.json();
+            window.alert(data.message);
 
+            if (res.ok) {
                 getCandidates();
 
                 setNewId('');
