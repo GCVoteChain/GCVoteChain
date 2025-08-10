@@ -217,12 +217,12 @@ function Election() {
                                     </div>
                                     {election.start_time && election.status === 'scheduled' && (
                                         <div className='election-item-time'>
-                                            Starts in {getTimeRemaining(election.start_time)}
+                                            Starts {getTimeRemaining(election.start_time)}
                                         </div>
                                     )}
                                     {election.end_time && election.status === 'open' && (
                                         <div className='election-item-time'>
-                                            Ends in {getTimeRemaining(election.end_time)}
+                                            Ends {getTimeRemaining(election.end_time)}
                                         </div>
                                     )}
                                     {election.end_time && election.status === 'closed' && (
