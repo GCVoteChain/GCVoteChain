@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const { Database } = require('sqlite3')
 const cron = require('node-cron');
+const { loadContracts } = require('../services/contract');
 
 const db = new Database(path.join(__dirname, './database.db'), { verbose: console.log });
 
@@ -63,20 +64,48 @@ db.exec(`
 `);
 
 
-cron.schedule('* * * * *', () => {
+cron.schedule('*/5 * * * * *', () => {
   const now = Math.floor(new Date() / 1000);
 
-  db.run(`
-    UPDATE elections
-    SET status = 'open'
+  db.all(`
+    SELECT id FROM elections
     WHERE status = 'scheduled' AND start_time <= ? AND end_time > ?
-  `, [now, now]);
+  `, [now, now], async(err, rows) => {
+    if (err) return console.error('Error fetching elections to open:', err);
 
-  db.run(`
-    UPDATE elections
-    SET status = 'closed'
+    const contracts = await loadContracts();
+
+    for (const { id } of rows) {
+      try {
+        const tx = await contracts.electionManager.startElection(id);
+        await tx.wait();
+
+        db.run(`UPDATE elections SET status = 'open' WHERE id = ?`, [id]);
+      } catch (error) {
+        console.error(`Failed to start election ${id}:`, error);
+      }
+    }
+  });
+
+  db.all(`
+    SELECT id FROM elections
     WHERE status = 'open' AND end_time <= ?
-  `, [now]);
+  `, [now], async(err, rows) => {
+    if (err) return console.error('Error fetching elections to close:', err);
+
+    const contracts = await loadContracts();
+
+    for (const { id } of rows) {
+      try {
+        const txStop = await contracts.electionManager.stopElection(id);
+        await txStop.wait();
+
+        db.run(`UPDATE elections SET status = 'closed' WHERE id = ?`, [id]);
+      } catch (error) {
+        console.error(`Failed to end election ${id}:`, error);
+      }
+    }
+  });
 });
 
 

@@ -60,18 +60,23 @@ contract ElectionManager {
     }
 
     
-    function createElection(bytes32 id, string calldata title, uint startTime, uint endTime) external onlyAdmin {
-        require(startTime < endTime, 'Invalid time range');
-        
+    function createElection(bytes32 id, string calldata title) external onlyAdmin {
         Election storage e = elections[id];
         e.title = title;
-        e.startTime = startTime;
-        e.endTime = endTime;
         e.onGoing = false;
         e.hasEnded = false;
         e.exists = true;
 
         electionCount++;
+    }
+
+    function setElectionSchedule(bytes32 id, uint startTime, uint endTime) external onlyAdmin validateElection(id) {
+        require(startTime < endTime, 'Invalid time range');
+        require(startTime > block.timestamp, 'Start time must be in the future');
+        
+        Election storage e = elections[id];
+        e.startTime = startTime;
+        e.endTime = endTime;
     }
     
     function startElection(bytes32 id) external onlyAdmin validateElection(id) {
@@ -84,11 +89,10 @@ contract ElectionManager {
         require(elections[id].onGoing, 'This election has not started yet');
         
         elections[id].onGoing = false;
+        elections[id].hasEnded = true;
     }
 
-    function cancelElection(bytes32 id) external onlyAdmin validateElection(id) {
-        require(elections[id].endTime > block.timestamp, 'This election has already ended');
-
+    function removeElection(bytes32 id) external onlyAdmin validateElection(id) {
         for (uint i = 0; i < positionCount; i++) {
             Position pos = Position(i);
 
@@ -111,14 +115,6 @@ contract ElectionManager {
         }
 
         delete elections[id];
-    }
-
-    function finalizeElection(bytes32 id) external onlyAdmin {
-        require(elections[id].exists, 'Invalid ID: does not exists');
-        require(elections[id].endTime > block.timestamp, 'This election has not yet ended');
-
-        elections[id].onGoing = false;
-        elections[id].hasEnded = true;
     }
 
     function vote(bytes32 electionId, bytes32 voterId, Candidate[] calldata votes) external validateElection(electionId) {

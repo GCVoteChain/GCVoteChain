@@ -27,6 +27,7 @@ async function createContract(contractPath, wallet, ...args) {
     const wallet = new ethers.Wallet(privateKey, provider);
 
     const adminIds = [
+        accounts.a.address,
         accounts.b.address,
         accounts.c.address,
     ];

@@ -4,6 +4,8 @@ const userModel = require('../models/userModel.js');
 
 const jwt = require('jsonwebtoken');
 
+const { loadContracts } = require('../services/contract.js');
+
 
 async function register(req, res) {
     try {
@@ -12,7 +14,12 @@ async function register(req, res) {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const voterId = keccak256(solidityPacked(['string', 'string', 'string'], [studentId, email, role]));
-        
+
+        const contracts = await loadContracts();
+
+        const tx = await contracts.voterManager.registerVoter(voterId);
+        await tx.wait();
+
         await userModel.registerUser(voterId, studentId, hashedPassword, name, email, role);
         res.send({ message: 'Registered successfully'});
     } catch (err) {
