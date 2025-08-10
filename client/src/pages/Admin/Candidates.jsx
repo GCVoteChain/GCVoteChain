@@ -22,82 +22,207 @@ function Candidates () {
     const [selectedElection, setSelectedElection] = useState({});
     const [candidates, setCandidates] = useState({});
 
+    const [newId, setNewId] = useState('');
+    const [selectedCandidate, setSelectedCandidate] = useState({});
+
     const [showCandidateInfoModal, setShowCandidateInfoModal] = useState(false);
 
     useAuth('admin');
     
     const { electionId } = useParams();
 
+    const getCandidates = async() => {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            navigate('/');
+            return;
+        }
+        
+        if (!electionId) {
+            navigate('/admin/elections');
+            return;
+        }
+
+        const getElection = await fetch(
+            `/api/elections/${electionId}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+
+        if (!getElection.ok) {
+            navigate('/admin/elections');
+            return;
+        }
+
+        const election = await getElection.json();
+
+        setSelectedElection(election);
+
+        const res = await fetch(
+            `/api/candidates/${electionId}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+
+        if (res.ok) {
+            const data = await res.json();
+
+            if (data.length > 0) {
+                setCandidates(() => {
+                    const grouped = {};
+
+                    POSITIONS.forEach(position => {
+                        grouped[position] = [];
+                    });
+
+                    data.forEach(({ student_id, position, name }) => {
+                        if (!grouped[position]) grouped[position] = [];
+                        grouped[position].push({ student_id, position, name });
+                    });
+
+                    return grouped;
+                })
+            }
+        }
+    }
+
     const effectRan = useRef(false);
     useEffect(() => {
         if (!effectRan.current) {
-            (async () => {
-                const token = localStorage.getItem('authToken');
-                if (!token) {
-                    navigate('/');
-                    return;
-                }
-                
-                if (!electionId) {
-                    navigate('/admin/elections');
-                    return;
-                }
-
-                const getElection = await fetch(
-                    `/api/elections/${electionId}`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    }
-                );
-
-                if (!getElection.ok) {
-                    navigate('/admin/elections');
-                    return;
-                }
-
-                const election = await getElection.json();
-
-                setSelectedElection(election);
-
-                const res = await fetch(
-                    `/api/candidates/${electionId}`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    }
-                );
-
-                if (res.ok) {
-                    const data = await res.json();
-
-                    if (!data.length === 0) {
-                        setCandidates(() => {
-                            const grouped = {};
-
-                            POSITIONS.forEach(position => {
-                                grouped[position] = [];
-                            });
-
-                            data.forEach(({ id, position, name }) => {
-                                if (grouped[position]) grouped[position] = [];
-                                grouped[position].push({ id, position, name });
-                            });
-
-                            return grouped;
-                        })
-                    }
-                }
-            })();
+            (async () => await getCandidates())();
         }
 
         effectRan.current = true;
-    }, [navigate, electionId, POSITIONS]);
+    });
 
+
+    const addCandidateHandler = async (e) => {
+        e.preventDefault();
+        
+        if (newId.trim() !== '' && selectedCandidate.name.trim() !== '' && selectedCandidate.position.trim() !== '') {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                navigate('/');
+                return;
+            }
+            
+            const res = await fetch(
+                '/api/candidates/add',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        studentId: newId,
+                        electionId: selectedElection.id,
+                        name: selectedCandidate.name,
+                        position: selectedCandidate.position
+                    })
+                }
+            );
+
+            if (res.ok) {
+                const data = await res.json();
+                window.alert(data.message);
+
+                getCandidates();
+
+                setNewId('');
+                setSelectedCandidate({});
+                setShowCandidateInfoModal(false);
+
+                getCandidates();
+            }
+        }
+    }
+
+
+    const editCandidateHandler = async(e) => {
+        e.preventDefault();
+        
+        if (selectedCandidate.name.trim() !== '' && selectedCandidate.position.trim() !== '') {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                navigate('/');
+                return;
+            }
+            
+            const res = await fetch(
+                '/api/candidates/update',
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        studentId: selectedCandidate.student_id,
+                        electionId: selectedElection.id,
+                        name: selectedCandidate.name,
+                        position: selectedCandidate.position
+                    })
+                }
+            );
+
+            if (res.ok) {
+                const data = await res.json();
+                window.alert(data.message);
+
+                getCandidates();
+
+                setNewId('');
+                setSelectedCandidate({});
+                setShowCandidateInfoModal(false);
+
+                getCandidates();
+            }
+        }
+    }
+    
+
+    const removeCandidateHandler = async(studentId) => {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            navigate('/');
+            return;
+        }
+        
+        const res = await fetch(
+            '/api/candidates/remove',
+            {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    electionId: selectedElection.id,
+                    studentId: studentId
+                })
+            }
+        );
+
+        const data = await res.json();
+        window.alert(data.message);
+
+        if (res.ok) {
+            getCandidates();
+
+            setNewId('');
+            setSelectedCandidate({});
+            setShowCandidateInfoModal(false);
+        }
+    }
     
 
     return (
@@ -107,9 +232,10 @@ function Candidates () {
                 <div className='candidates-div'>
                     <div className='candidates-div-header'>
                         <h2>{selectedElection.title}</h2>
-                        <button className='candidates-div-add' onClick={() => setShowCandidateInfoModal(true)}>
-                            Add new candidate
-                        </button>
+                        <button className='candidates-div-add' onClick={() => {
+                            setSelectedCandidate({});
+                            setShowCandidateInfoModal(true);
+                        }}>New Candidate</button>
                     </div>
                     <div className='candidates-div-list'>
                         {POSITIONS.map((position) => (
@@ -117,11 +243,17 @@ function Candidates () {
                                 <summary>{position}</summary>
                                 {candidates[position] && candidates[position].length > 0 ? (
                                     <ul>
-                                        {candidates[position].map(({ id, name }) => (
-                                            <li key={id}>
-                                                <h3>{name}</h3>
-                                                <button className='candidate-edit'>Edit</button>
-                                                <button className='candidate-remove'>Remove</button>
+                                        {candidates[position].map((candidate) => (
+                                            <li key={candidate.student_id}>
+                                                <h3>{candidate.name}</h3>
+                                                <button className='candidate-edit' onClick={() => {
+                                                    setSelectedCandidate(candidate);
+                                                    setShowCandidateInfoModal(true);
+                                                }}>Edit</button>
+                                                <button className='candidate-remove' onClick={() => {
+                                                    const confirm = window.confirm(`Are you sure you want to remove ${candidate.name}?`);
+                                                    if (confirm) removeCandidateHandler(candidate.student_id);
+                                                }}>Remove</button>
                                             </li>
                                         ))}
                                     </ul>
@@ -131,6 +263,62 @@ function Candidates () {
                             </details>
                         ))}
                     </div>
+                    {showCandidateInfoModal && (
+                        <div className='candidates-div-info-modal'>
+                            <div className='candidates-div-info-modal-form'>
+                                <h2>{selectedCandidate.student_id ? 'Edit Candidate' : 'New Candidate'}</h2>
+                                <form onSubmit={selectedCandidate.student_id ? editCandidateHandler : addCandidateHandler}>
+                                    <label>
+                                        Student ID:
+                                        <input
+                                            type='text'
+                                            value={selectedCandidate.student_id ? selectedCandidate.student_id : newId}
+                                            onChange={(e) => setNewId(e.target.value)}
+                                            required
+                                            disabled={selectedCandidate.student_id}
+                                        />
+                                    </label>
+                                    <label>
+                                        Name:
+                                        <input
+                                            type='text'
+                                            value={selectedCandidate.name || '' }
+                                            onChange={(e) => setSelectedCandidate({ ...selectedCandidate, name: e.target.value })}
+                                            required
+                                        />
+                                    </label>
+                                    <label>
+                                        Position:
+                                        <select
+                                            value={selectedCandidate.position || ''}
+                                            onChange={(e) => setSelectedCandidate({ ...selectedCandidate, position: e.target.value })}
+                                            required
+                                        >
+                                            <option value=''>Select Position</option>
+                                            {POSITIONS.map((pos) => (
+                                                <option key={pos} value={pos}>
+                                                    {pos}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                    <div className='modal-buttons'>
+                                        <button type='submit'>Save</button>
+                                        <button
+                                            type='button'
+                                            onClick={() => {
+                                                setShowCandidateInfoModal(false);
+                                                setSelectedCandidate({});
+                                                setNewId('');
+                                            }}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
                 </div>
             }
             footerContent={

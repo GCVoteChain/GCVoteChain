@@ -14,11 +14,11 @@ const updateCandidateStmt = db.prepare(`
 
 const removeCandidateStmt = db.prepare(`
     DELETE FROM candidates
-    WHERE student_id = ? AND election_id = ?
+    WHERE election_id = ? AND student_id = ?
 `);
 
 const getAllCandidatesStmt = db.prepare(`
-    SELECT id, position, name FROM candidates
+    SELECT student_id, position, name FROM candidates
     WHERE election_id = ?
 `)
 
@@ -40,7 +40,7 @@ async function updateCandidate(electionId, studentId, name, position) {
 
 
 async function removeCandidate(electionId, studentId) {
-    return removeAsync(studentId, electionId);
+    return removeAsync(electionId, studentId);
 }
 
 

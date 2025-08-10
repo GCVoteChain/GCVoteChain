@@ -46,9 +46,14 @@ function Registration() {
                 }
             );
 
-            if (!res.ok) {
-                console.log('Failed to register new voter');
-            }
+            const data = await res.json();
+            
+            window.alert(data.message);
+
+            setID('');
+            setPass('');
+            setName('');
+            setEmail('');
         }
     }
     

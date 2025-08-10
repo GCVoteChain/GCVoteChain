@@ -79,7 +79,7 @@ async function getAll(req, res) {
 
 async function get(req, res) {
     try {
-        const { id } = req.query;
+        const { id } = req.params;
         
         const election = await electionModel.getById(id);
 

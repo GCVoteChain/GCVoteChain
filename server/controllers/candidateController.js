@@ -1,4 +1,5 @@
 const candidateModel = require('../models/candidateModel.js');
+const { keccak256, solidityPacked } = require('ethers');
 
 
 async function add(req, res) {
@@ -34,6 +35,9 @@ async function update(req, res) {
 async function remove(req, res) {
     try {
         const { electionId, studentId } = req.body;
+        if (!electionId || !studentId) {
+            return res.status(400).send({ message: 'Invalid or missing Election ID and/or Student ID.\n\nPlease refresh the page.'})
+        }
 
         await candidateModel.removeCandidate(electionId, studentId);
 
@@ -47,12 +51,14 @@ async function remove(req, res) {
 
 async function get(req, res) {
     try {
-        const { electionId } = req.query;
-        if (electionId) {
+        const { electionId } = req.params;
+        if (!electionId) {
             return res.status(400).send({ message: 'Missing election ID'});
         }
 
         const candidates = await candidateModel.getAllCandidates(electionId);
+
+        console.log(candidates);
 
         res.send(candidates);
     } catch (err) {

@@ -1,8 +1,17 @@
+.layout-main-center-div {
+    max-width: 800px;
+    flex-grow: 1;
+    width: 100%;
+    overflow: hidden;
+}
+
 .candidates-div {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
     box-sizing: border-box;
+    flex-grow: 1;
+    overflow-y: auto;
 }
 
 
@@ -125,4 +134,90 @@
     font-style: italic;
     color: #777;
     margin: 10px 0 0 10px;
+}
+
+
+.candidates-div-info-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+
+.candidates-div-info-modal-form {
+    background: white;
+    padding: 30px 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+
+.candidates-div-info-modal-form label {
+    display: block;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+
+.candidates-div-info-modal-form input,
+.candidates-div-info-modal-form select {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    margin-top: 5px;
+    text-align: center;
+}
+
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+
+.modal-buttons button {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+.modal-buttons button[type='submit'] {
+    background-color: #28a745;
+    color: white;
+}
+
+
+.modal-buttons button[type='submit']:hover {
+    background-color: #218838;
+}
+
+
+
+.modal-buttons button[type='button'] {
+    background-color: #6c757d;
+    color: white;
+}
+
+
+.modal-buttons button[type='button']:hover {
+    background-color: #5a6268;
 }
