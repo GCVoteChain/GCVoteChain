@@ -58,12 +58,12 @@ cron.schedule('*/5 * * * * *', () => {
   `, [now, now], async(err, rows) => {
     if (err) return console.error('Error fetching elections to open:', err);
 
-    const contracts = await loadContracts();
+    // const contracts = await loadContracts();
 
     for (const { id } of rows) {
       try {
-        const tx = await contracts.electionManager.startElection(id);
-        await tx.wait();
+        // const tx = await contracts.electionManager.startElection(id);
+        // await tx.wait();
 
         db.run(`UPDATE elections SET status = 'open' WHERE id = ?`, [id]);
       } catch (error) {
@@ -78,12 +78,12 @@ cron.schedule('*/5 * * * * *', () => {
   `, [now], async(err, rows) => {
     if (err) return console.error('Error fetching elections to close:', err);
 
-    const contracts = await loadContracts();
+    // const contracts = await loadContracts();
 
     for (const { id } of rows) {
       try {
-        const txStop = await contracts.electionManager.stopElection(id);
-        await txStop.wait();
+        // const txStop = await contracts.electionManager.stopElection(id);
+        // await txStop.wait();
 
         db.run(`UPDATE elections SET status = 'closed' WHERE id = ?`, [id]);
       } catch (error) {
