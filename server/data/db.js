@@ -46,21 +46,6 @@ db.exec(`
     election_id TEXT NOT NULL,
     FOREIGN KEY (election_id) REFERENCES elections(id)
   );
-
-  CREATE TABLE IF NOT EXISTS transactions (
-    tx_hash TEXT PRIMARY KEY,
-    status TEXT NOT NULL,
-    voter_id TEXT NOT NULL,
-    FOREIGN KEY (voter_id) REFERENCES users(voter_id)
-  );
-  
-  CREATE TABLE IF NOT EXISTS logs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    action TEXT NOT NULL,
-    timestamp DATETIME,
-    tx_hash TEXT NOT NULL,
-    FOREIGN KEY (tx_hash) REFERENCES transactions(tx_hash)
-  );
 `);
 
 
