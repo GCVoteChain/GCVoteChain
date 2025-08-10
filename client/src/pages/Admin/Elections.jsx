@@ -32,6 +32,7 @@ function Election() {
     const [electionEndTime, setElectionEndTime] = useState('');
     const [showElectionTimeModal, setShowElectionTimeModal] = useState(false);
     
+    const [loading, setLoading] = useState(false);
     
     useAuth('admin');
 
@@ -73,59 +74,67 @@ function Election() {
         e.preventDefault();
 
         if (newElectionName !== '') {
-            const token = localStorage.getItem('authToken');
-            if (!token) {
-                navigate('/');
-                return;
-            }
+            setLoading(true);
 
-            const addResult = await fetch(
-                '/api/elections/add',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ title: newElectionName})
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    navigate('/');
+                    return;
                 }
-            );
-
-            const addResultData = await addResult.json();
-
-            
-            setResMessage(addResultData.message);
-            setShowMessageModal(true);
-
-            if (addResult.ok) {
-                const getRes = await fetch(
-                    '/api/elections/',
+    
+                const addResult = await fetch(
+                    '/api/elections/add',
                     {
-                        method: 'GET',
+                        method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
                         },
+                        body: JSON.stringify({ title: newElectionName})
                     }
                 );
+    
+                const addResultData = await addResult.json();
+    
                 
-                if (getRes.ok) {
-                    const data = await getRes.json();
-                    setElections(data);
-                } else if (getRes.status === 403 || getRes.status === 401) {
+                setResMessage(addResultData.message);
+                setShowMessageModal(true);
+    
+                if (addResult.ok) {
+                    const getRes = await fetch(
+                        '/api/elections/',
+                        {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                        }
+                    );
+                    
+                    if (getRes.ok) {
+                        const data = await getRes.json();
+                        setElections(data);
+                    } else if (getRes.status === 403 || getRes.status === 401) {
+                        localStorage.removeItem('authToken');
+                        navigate('/');
+                        return;
+                    }
+    
+                } else if (addResult.status === 401 || addResult.status === 403) {
                     localStorage.removeItem('authToken');
                     navigate('/');
                     return;
                 }
-
-            } else if (addResult.status === 401 || addResult.status === 403) {
-                localStorage.removeItem('authToken');
-                navigate('/');
-                return;
+                
+                setNewElectionName('');
+                setShowNewElectionModal(false);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
             }
-            
-            setNewElectionName('');
-            setShowNewElectionModal(false);
         }
     }
 
@@ -134,65 +143,73 @@ function Election() {
         e.preventDefault();
 
         if (electionStartTime.trim() !== '' && electionEndTime.trim() !== '') {
-            const token = localStorage.getItem('authToken');
-            if (!token) {
-                navigate('/');
-                return;
-            }
+            setLoading(true);
 
-            const setRes = await fetch(
-                '/api/elections/set-schedule',
-                {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id: selectedElection.id,
-                        startTime: electionStartTime,
-                        endTime: electionEndTime
-                    })
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    navigate('/');
+                    return;
                 }
-            );
-
-            const setData = await setRes.json();
-
-            setResMessage(setData.message);
-            setShowMessageModal(true);
-
-            if (setRes.ok) {
-                const getRes = await fetch(
-                    '/api/elections/',
+    
+                const setRes = await fetch(
+                    '/api/elections/set-schedule',
                     {
-                        method: 'GET',
+                        method: 'PUT',
                         headers: {
                             'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
                         },
+                        body: JSON.stringify({
+                            id: selectedElection.id,
+                            startTime: electionStartTime,
+                            endTime: electionEndTime
+                        })
                     }
                 );
-                
-                if (getRes.ok) {
-                    const data = await getRes.json();
-                    setElections(data);
-                } else if (getRes.status === 403 || getRes.status === 401) {
+    
+                const setData = await setRes.json();
+    
+                setResMessage(setData.message);
+                setShowMessageModal(true);
+    
+                if (setRes.ok) {
+                    const getRes = await fetch(
+                        '/api/elections/',
+                        {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                        }
+                    );
+                    
+                    if (getRes.ok) {
+                        const data = await getRes.json();
+                        setElections(data);
+                    } else if (getRes.status === 403 || getRes.status === 401) {
+                        localStorage.removeItem('authToken');
+                        navigate('/');
+                        return;
+                    }
+                } else if (setRes.status === 401 || setRes.status === 403) {
                     localStorage.removeItem('authToken');
                     navigate('/');
                     return;
                 }
-            } else if (setRes.status === 401 || setRes.status === 403) {
-                localStorage.removeItem('authToken');
-                navigate('/');
-                return;
+    
+                setElectionStartTime('');
+                setElectionEndTime('');
+                setSelectedElection({});
+    
+                setShowSelectedElectionModal(false);
+                setShowElectionTimeModal(false);
+            } catch (err) {
+                console.error();
+            } finally {
+                setLoading(false);
             }
-
-            setElectionStartTime('');
-            setElectionEndTime('');
-            setSelectedElection({});
-
-            setShowSelectedElectionModal(false);
-            setShowElectionTimeModal(false);
         }
     }
 
@@ -242,10 +259,22 @@ function Election() {
                                 <h3>New Election</h3>
                                 <form onSubmit={newElectionHandler}>
                                     <div className='elections-add-modal-form-input-box'>
-                                        <input type='text' value={newElectionName} placeholder='Election name' onChange={(e) => setNewElectionName(e.target.value)} required/>
+                                        <input 
+                                            type='text' 
+                                            value={newElectionName} 
+                                            placeholder='Election name' 
+                                            onChange={(e) => setNewElectionName(e.target.value)} 
+                                            required
+                                            disabled={loading}
+                                        />
                                     </div>
                                     <div className='elections-add-modal-form-submit'>
-                                        <button type='submit' disabled={newElectionName.trim() === ''}>Submit</button>
+                                        <button 
+                                            type='submit' 
+                                            disabled={newElectionName.trim() === '' || loading}
+                                        >
+                                            Submit
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -304,7 +333,9 @@ function Election() {
                                                         type='datetime-local' 
                                                         required={true} 
                                                         value={electionStartTime} 
-                                                        onChange={(e) => setElectionStartTime(e.target.value)}/>
+                                                        onChange={(e) => setElectionStartTime(e.target.value)}
+                                                        disabled={loading}
+                                                    />
                                                 </div>
                                                 <div className='selected-election-div-time'>
                                                     <label>End time:</label>
@@ -312,15 +343,23 @@ function Election() {
                                                         type='datetime-local' 
                                                         required={true} 
                                                         value={electionEndTime} 
-                                                        onChange={(e) => setElectionEndTime(e.target.value)}/>
+                                                        onChange={(e) => setElectionEndTime(e.target.value)}
+                                                        disabled={loading}
+                                                    />
                                                 </div>
                                                 <div className='selected-election-time-modal-form-buttons'>
                                                     <button type='submit'>Submit</button>
-                                                    <button type='button' onClick={() => {
-                                                        setElectionStartTime('');
-                                                        setElectionEndTime('');
-                                                        setShowElectionTimeModal(false);
-                                                    }}>Cancel</button>
+                                                    <button 
+                                                        type='button' 
+                                                        onClick={() => {
+                                                            setElectionStartTime('');
+                                                            setElectionEndTime('');
+                                                            setShowElectionTimeModal(false);
+                                                        }}
+                                                        disabled={loading}
+                                                    >
+                                                        Cancel
+                                                    </button>
                                                 </div>
                                             </form>
                                         </div>

@@ -27,6 +27,8 @@ function Candidates () {
 
     const [showCandidateInfoModal, setShowCandidateInfoModal] = useState(false);
 
+    const [loading, setLoading] = useState(false);
+
     useAuth('admin');
     
     const { electionId } = useParams();
@@ -75,22 +77,20 @@ function Candidates () {
         if (res.ok) {
             const data = await res.json();
 
-            if (data.length > 0) {
-                setCandidates(() => {
-                    const grouped = {};
+            setCandidates(() => {
+                const grouped = {};
 
-                    POSITIONS.forEach(position => {
-                        grouped[position] = [];
-                    });
+                POSITIONS.forEach(position => {
+                    grouped[position] = [];
+                });
 
-                    data.forEach(({ student_id, position, name }) => {
-                        if (!grouped[position]) grouped[position] = [];
-                        grouped[position].push({ student_id, position, name });
-                    });
+                data.forEach(({ student_id, position, name }) => {
+                    if (!grouped[position]) grouped[position] = [];
+                    grouped[position].push({ student_id, position, name });
+                });
 
-                    return grouped;
-                })
-            }
+                return grouped;
+            })
         }
     }
 
@@ -108,40 +108,46 @@ function Candidates () {
         e.preventDefault();
         
         if (newId.trim() !== '' && selectedCandidate.name.trim() !== '' && selectedCandidate.position.trim() !== '') {
-            const token = localStorage.getItem('authToken');
-            if (!token) {
-                navigate('/');
-                return;
-            }
+            setLoading(true);
             
-            const res = await fetch(
-                '/api/candidates/add',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        studentId: newId,
-                        electionId: selectedElection.id,
-                        name: selectedCandidate.name,
-                        position: selectedCandidate.position
-                    })
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    navigate('/');
+                    return;
                 }
-            );
 
-            const data = await res.json();
-            window.alert(data.message);
-
-            if (res.ok) {
-                getCandidates();
-
-                setNewId('');
-                setSelectedCandidate({});
-                setShowCandidateInfoModal(false);
-
-                getCandidates();
+                const res = await fetch(
+                    '/api/candidates/add',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            studentId: newId,
+                            electionId: selectedElection.id,
+                            name: selectedCandidate.name,
+                            position: selectedCandidate.position
+                        })
+                    }
+                );
+    
+                const data = await res.json();
+                window.alert(data.message);
+    
+                if (res.ok) {
+                    await getCandidates();
+    
+                    setNewId('');
+                    setSelectedCandidate({});
+                    setShowCandidateInfoModal(false);
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
             }
         }
     }
@@ -151,6 +157,55 @@ function Candidates () {
         e.preventDefault();
         
         if (selectedCandidate.name.trim() !== '' && selectedCandidate.position.trim() !== '') {
+            setLoading(true);
+            
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    navigate('/');
+                    return;
+                }
+                
+                const res = await fetch(
+                    '/api/candidates/update',
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            studentId: selectedCandidate.student_id,
+                            electionId: selectedElection.id,
+                            name: selectedCandidate.name,
+                            position: selectedCandidate.position
+                        })
+                    }
+                );
+    
+                const data = await res.json();
+                window.alert(data.message);
+
+                if (res.ok) {
+                    await getCandidates();
+    
+                    setNewId('');
+                    setSelectedCandidate({});
+                    setShowCandidateInfoModal(false);
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+    }
+    
+
+    const removeCandidateHandler = async(studentId) => {
+        setLoading(true);
+
+        try {
             const token = localStorage.getItem('authToken');
             if (!token) {
                 navigate('/');
@@ -158,69 +213,34 @@ function Candidates () {
             }
             
             const res = await fetch(
-                '/api/candidates/update',
+                '/api/candidates/remove',
                 {
-                    method: 'PUT',
+                    method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        studentId: selectedCandidate.student_id,
                         electionId: selectedElection.id,
-                        name: selectedCandidate.name,
-                        position: selectedCandidate.position
+                        studentId: studentId
                     })
                 }
             );
-
+    
+            const data = await res.json();
+            window.alert(data.message);
+    
             if (res.ok) {
-                const data = await res.json();
-                window.alert(data.message);
-
-                getCandidates();
-
+                await getCandidates();
+    
                 setNewId('');
                 setSelectedCandidate({});
                 setShowCandidateInfoModal(false);
-
-                getCandidates();
             }
-        }
-    }
-    
-
-    const removeCandidateHandler = async(studentId) => {
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-            navigate('/');
-            return;
-        }
-        
-        const res = await fetch(
-            '/api/candidates/remove',
-            {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    electionId: selectedElection.id,
-                    studentId: studentId
-                })
-            }
-        );
-
-        const data = await res.json();
-        window.alert(data.message);
-
-        if (res.ok) {
-            getCandidates();
-
-            setNewId('');
-            setSelectedCandidate({});
-            setShowCandidateInfoModal(false);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
     }
     
@@ -275,7 +295,7 @@ function Candidates () {
                                             value={selectedCandidate.student_id ? selectedCandidate.student_id : newId}
                                             onChange={(e) => setNewId(e.target.value)}
                                             required
-                                            disabled={selectedCandidate.student_id}
+                                            disabled={selectedCandidate.student_id || loading}
                                         />
                                     </label>
                                     <label>
@@ -285,6 +305,7 @@ function Candidates () {
                                             value={selectedCandidate.name || '' }
                                             onChange={(e) => setSelectedCandidate({ ...selectedCandidate, name: e.target.value })}
                                             required
+                                            disabled={loading}
                                         />
                                     </label>
                                     <label>
@@ -293,6 +314,7 @@ function Candidates () {
                                             value={selectedCandidate.position || ''}
                                             onChange={(e) => setSelectedCandidate({ ...selectedCandidate, position: e.target.value })}
                                             required
+                                            disabled={loading}
                                         >
                                             <option value=''>Select Position</option>
                                             {POSITIONS.map((pos) => (
@@ -303,7 +325,9 @@ function Candidates () {
                                         </select>
                                     </label>
                                     <div className='modal-buttons'>
-                                        <button type='submit'>Save</button>
+                                        <button type='submit' disabled={loading}>
+                                            {loading ? 'Saving...' : 'Save'}
+                                        </button>
                                         <button
                                             type='button'
                                             onClick={() => {
@@ -311,6 +335,7 @@ function Candidates () {
                                                 setSelectedCandidate({});
                                                 setNewId('');
                                             }}
+                                            disabled={loading}
                                         >
                                             Cancel
                                         </button>

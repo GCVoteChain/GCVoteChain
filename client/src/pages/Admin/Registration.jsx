@@ -14,6 +14,9 @@ function Registration() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
 
+    const [loading, setLoading] = useState(false);
+
+
     useAuth('admin');
 
     const isFormValid = id.trim() !== '' && pass.trim() !== '' && email.trim() !== '';
@@ -21,7 +24,12 @@ function Registration() {
     const registerHandler = async(e) => {
         e.preventDefault();
 
-        if (isFormValid) {
+        if (!isFormValid || loading) return;
+
+        setLoading(true);
+        
+        try {
+
             const token = localStorage.getItem('authToken');
             if (!token) {
                 navigate('/');
@@ -45,15 +53,20 @@ function Registration() {
                     })
                 }
             );
-
+    
             const data = await res.json();
             
             window.alert(data.message);
-
+    
             setID('');
             setPass('');
             setName('');
             setEmail('');
+        } catch (err) {
+            console.error('Registration failed:', err);
+            window.alert('Registratation failed. Please try again');
+        } finally {
+            setLoading(false);
         }
     }
     
@@ -81,7 +94,9 @@ function Registration() {
                             <input type='email' placeholder='Email' onChange={event => setEmail(event.target.value)} value={email}required/>
                         </div>
                         <div className='registration-form-submit'>
-                            <button type='submit' disabled={!isFormValid}> Register</button>       
+                            <button type='submit' disabled={!isFormValid || loading}>
+                                {loading ? 'Registering...' : 'Register'}
+                            </button>       
                         </div>
                     </form>
                 </div>
