@@ -33,7 +33,7 @@ async function setSchedule(req, res) {
 
         const now = Math.floor(new Date().getTime() / 1000);
         
-        if (start > end) return res.status(400).send({ message: 'Start time must be before the end time' });
+        if (start >= end) return res.status(400).send({ message: 'Start time must be before the end time' });
         if (start < now) return res.status(400).send({ message: 'Start time must be in the future' });
 
         // const contracts = await loadContracts();
@@ -81,7 +81,10 @@ async function remove(req, res) {
 
 async function getAll(req, res) {
     try {
-        const elections = await electionModel.getAllElections();
+        let elections;
+        
+        if (req.user.role === 'voter') elections = await electionModel.getAvailableElections();
+        else elections = await electionModel.getAllElections();
 
         res.send(elections);
     } catch (err) {

@@ -25,11 +25,36 @@ const removeElectionStmt = db.prepare(`
 
 const getElectionsStmt = db.prepare(`
     SELECT * FROM elections
+    ORDER BY
+        CASE status
+            WHEN 'draft' THEN 1
+            WHEN 'open' THEN 2
+            WHEN 'scheduled' THEN 3
+            WHEN 'closed' THEN 4
+        END,
+
+        CASE
+            WHEN status = 'open' THEN end_time
+            WHEN status = 'scheduled' THEN start_time
+        END ASC,
+
+        CASE
+            WHEN status = 'closed' THEN end_time
+        END DESC;
 `);
 
-const getElectionByIdStmt = db.prepare(`
+const getAvailableElectionsStmt = db.prepare(`
     SELECT * FROM elections
-    WHERE id = ?
+    WHERE id = ? AND status != 'draft'
+    ORDER BY
+        CASE status
+            WHEN 'open' THEN 1
+            WHEN 'scheduled' THEN 2
+        END,
+        CASE
+            WHEN status = 'open' THEN end_time
+            WHEN status = 'scheduled' THEN start_time
+        END ASC;
 `);
 
 
@@ -38,7 +63,7 @@ const setScheduleAsync = promisify(setElectionScheduleStmt.run.bind(setElectionS
 const setStatusAsync = promisify(setElectionStatusStmt.run.bind(setElectionStatusStmt));
 const removeAsync = promisify(removeElectionStmt.run.bind(removeElectionStmt));
 const getAllAsync = promisify(getElectionsStmt.all.bind(getElectionsStmt));
-const getByIdAsync = promisify(getElectionsStmt.get.bind(getElectionsStmt));
+const getAvailableElectionsAsync = promisify(getAvailableElectionsStmt.all.bind(getAvailableElectionsStmt));
 
 
 async function addElection(id, title) {
@@ -66,8 +91,8 @@ async function getAllElections() {
 }
 
 
-async function getById(id) {
-    return getByIdAsync(id);
+async function getAvailableElections() {
+    return getAvailableElectionsAsync() || [];
 }
 
 
@@ -77,12 +102,12 @@ module.exports = {
     setElectionStatusStmt,
     removeElectionStmt,
     getElectionsStmt,
-    getElectionByIdStmt,
+    getAvailableElectionsStmt,
 
     addElection,
     setElectionSchedule,
     setElectionStatus,
     removeElection,
     getAllElections,
-    getById,
+    getAvailableElections,
 };
