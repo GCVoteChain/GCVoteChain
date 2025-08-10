@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "install": "cd smart_contracts && npm install"
+    "install": "cd smart_contracts && npm install",
+    "start": "./run.sh",
+    "stop": "./stop.sh",
+    "remove": "./remove.sh",
+    "compile": "cd smart_contracts/scripts && node compile.js",
+    "deploy": "cd smart_contracts/scripts && node deploy.js"
   },
   "keywords": [],
   "author": "",
