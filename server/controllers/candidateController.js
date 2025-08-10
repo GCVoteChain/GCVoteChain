@@ -1,6 +1,5 @@
 const candidateModel = require('../models/candidateModel.js');
 const { keccak256, solidityPacked } = require('ethers');
-// const { loadContracts } = require('../services/contract.js');
 
 
 async function add(req, res) {
@@ -8,11 +7,6 @@ async function add(req, res) {
         const { studentId, electionId, name, position } = req.body;
 
         const candidateId = keccak256(solidityPacked(['string', 'string', 'string'], [electionId, studentId, position]));
-
-        // const contracts = loadContracts();
-
-        // const tx = await contracts.electionManager.registerCandidate(electionId, candidateId);
-        // await tx.wait();
 
         await candidateModel.addCandidate(candidateId, studentId, electionId, name, position);
 

@@ -36,10 +36,10 @@ async function setSchedule(req, res) {
         if (start > end) return res.status(400).send({ message: 'Start time must be before the end time' });
         if (start < now) return res.status(400).send({ message: 'Start time must be in the future' });
 
-        const contracts = await loadContracts();
+        // const contracts = await loadContracts();
 
-        const tx = await contracts.electionManager.setElectionSchedule(id, start, end);
-        await tx.wait();
+        // const tx = await contracts.electionManager.setElectionSchedule(id, start, end);
+        // await tx.wait();
 
         await electionModel.setElectionSchedule(id, start, end);
 
@@ -68,11 +68,6 @@ async function setStatus(req, res) {
 async function remove(req, res) {
     try {
         const { id } = req.body;
-
-        // const contracts = await loadContracts();
-
-        // const tx = await contracts.electionManager.removeElection(id);
-        // await tx.wait();
 
         await electionModel.addElection(id, title);
 

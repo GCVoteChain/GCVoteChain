@@ -38,14 +38,6 @@ db.exec(`
     FOREIGN KEY (student_id) REFERENCES users(student_id),
     FOREIGN KEY (election_id) REFERENCES elections(id)
   );
-
-  CREATE TABLE IF NOT EXISTS votes (
-    uuid TEXT PRIMARY KEY,
-    votes TEXT NOT NULL,
-    timestamp DATETIME,
-    election_id TEXT NOT NULL,
-    FOREIGN KEY (election_id) REFERENCES elections(id)
-  );
 `);
 
 
