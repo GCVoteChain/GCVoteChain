@@ -17,7 +17,7 @@
     "grayGlacierBlock": 0,
     "qbft": {
       "epochLength": 30000,
-      "blockPeriodSeconds": 5
+      "blockPeriodSeconds": 2
     },
     "transitions": [
       {
