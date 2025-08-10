@@ -52,7 +52,9 @@ async function updatePassword(req, res) {
     try {
         const { studentId, password } = req.body;
 
-        await userModel.updatePassword(studentId, password);
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await userModel.updatePassword(studentId, hashedPassword);
 
         res.send({ message: 'Password changed successfully' });
     } catch (err) {
