@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { Database } = require('sqlite3')
+const cron = require('node-cron');
 
 const db = new Database(path.join(__dirname, './database.db'), { verbose: console.log });
 
@@ -21,8 +22,8 @@ db.exec(`
     id TEXT PRIMARY KEY,
     title TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'scheduled', 'open', 'closed', 'cancelled')),
-    start_time DATETIME,
-    end_time DATETIME
+    start_time INTEGER,
+    end_time INTEGER
   );
 
   CREATE TABLE IF NOT EXISTS candidates (
@@ -60,5 +61,23 @@ db.exec(`
     FOREIGN KEY (tx_hash) REFERENCES transactions(tx_hash)
   );
 `);
+
+
+cron.schedule('* * * * *', () => {
+  const now = Math.floor(new Date() / 1000);
+
+  db.run(`
+    UPDATE elections
+    SET status = 'open'
+    WHERE status = 'scheduled' AND start_time <= ? AND end_time > ?
+  `, [now, now]);
+
+  db.run(`
+    UPDATE elections
+    SET status = 'closed'
+    WHERE status = 'open' AND end_time <= ?
+  `, [now]);
+});
+
 
 module.exports = db;
