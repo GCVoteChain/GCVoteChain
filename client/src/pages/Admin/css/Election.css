@@ -91,6 +91,26 @@
 }
 
 
+.election-item-status.draft {
+    color: grey;
+}
+
+
+.election-item-status.scheduled {
+    color: orange;
+}
+
+
+.election-item-status.open {
+    color: green;
+}
+
+
+.election-item-status.closed {
+    color: red;
+}
+
+
 .elections-button-add {
     position: absolute;
     bottom: 80px;
@@ -379,6 +399,12 @@
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
+}
+
+
+.selected-election-div-schedule button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
 

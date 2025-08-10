@@ -211,18 +211,23 @@ function Election() {
                                 }}>
                                     <div className='election-item-top'>
                                         <div className='election-item-name'>{election.title}</div>
-                                        <div className='election-item-status'>
+                                        <div className={`election-item-status ${election.status}`}>
                                             {election.status.charAt(0).toUpperCase() + election.status.slice(1)}
                                         </div>
                                     </div>
                                     {election.start_time && election.status === 'scheduled' && (
                                         <div className='election-item-time'>
-                                            Starts in: {getTimeRemaining(election.start_time)}
+                                            Starts in {getTimeRemaining(election.start_time)}
                                         </div>
                                     )}
                                     {election.end_time && election.status === 'open' && (
                                         <div className='election-item-time'>
-                                            Ends in: {getTimeRemaining(election.end_time)}
+                                            Ends in {getTimeRemaining(election.end_time)}
+                                        </div>
+                                    )}
+                                    {election.end_time && election.status === 'closed' && (
+                                        <div className='election-item-time'>
+                                            Ended {getTimeRemaining(election.end_time)}
                                         </div>
                                     )}
                                 </li>
