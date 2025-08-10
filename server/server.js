@@ -89,14 +89,14 @@ app.use(routes);
 })();
 
 
-(async function initializeContracts() {
-  try {
-    await loadContracts();
-    console.log('Smart contracts loaded');
-  } catch (err) {
-    console.error('Error loading contracts:', err);
-  }
-})();
+// (async function initializeContracts() {
+//   try {
+//     await loadContracts();
+//     console.log('Smart contracts loaded');
+//   } catch (err) {
+//     console.error('Error loading contracts:', err);
+//   }
+// })();
 
 
 app.listen(PORT, () => {
