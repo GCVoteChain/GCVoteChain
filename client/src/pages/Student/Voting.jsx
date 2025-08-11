@@ -1,3 +1,4 @@
+import './css/Voting.css';
 import Layout from "../Layout";
 import { useNavigate,useParams } from "react-router-dom";
 import useAuth from "../../hooks/auth";
@@ -5,6 +6,8 @@ import { useEffect,useMemo,useRef,useState } from "react";
 
 function Voting() {
     const navigate = useNavigate();
+
+    useAuth('voter');
 
     const POSITIONS = useMemo(() => {
         return [
@@ -20,10 +23,10 @@ function Voting() {
 
     const [selectedElection, setSelectedElection] = useState({});
     const [candidates, setCandidates] = useState({});
-
+    
+    const [votes, setVotes] = useState({});
+    
     const [loading, setLoading] = useState(false);
-
-    useAuth('voter');
 
     const { electionId } = useParams();
 
@@ -103,7 +106,80 @@ function Voting() {
         effectRan.current = true;
     });
 
-    return ('');
+
+    const submitVoteHandler = async(e) => {
+        e.preventDefault();
+
+        setLoading(true);
+
+        try {
+            
+        } catch (err) {
+
+        } finally {
+            setLoading(false);
+        }
+    }
+
+
+    const allVotesValid = !POSITIONS.every(position => votes[position] && votes[position].trim() !== '');
+
+
+    return (
+        <Layout
+            headerContent={'Voting'}
+            mainContent={
+                <div className='voting'>
+                    <h2>{selectedElection?.title || 'Election'}</h2>
+                    <form onSubmit={submitVoteHandler}>
+                        {POSITIONS.map((position) => (
+                            <div key={position}>
+                                <label htmlFor={position}>
+                                    <strong>{position}</strong>
+                                </label>
+                                <br/>
+                                <select
+                                    id={position}
+                                    value={votes[position] || ''}
+                                    onChange={(e) => {
+                                        setVotes(prev => ({
+                                            ...prev,
+                                            [position]: e.target.value
+                                        }));
+                                    }}
+                                    required
+                                >
+                                    <option value=''>-- Select a candidate --</option>
+                                    {(candidates[position] || []).map(candidate => (
+                                        <option
+                                            key={candidate.student_id}
+                                            value={candidate.student_id}
+                                        >
+                                            {candidate.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        ))}
+                        <div className='voting-submit'>
+                            <button 
+                                type='submit'
+                                disabled={allVotesValid || loading}
+                            >
+                                Submit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            }
+            footerContent={
+                <ul>
+                    <li><a href='/student/elections'>Elections</a></li>
+                    <li><a href='/student/elections'>Settings</a></li>
+                </ul>
+            }
+        ></Layout>
+    );
 }
 
 

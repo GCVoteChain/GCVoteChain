@@ -1,0 +1,86 @@
+.voting {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    flex-grow: 1;
+    overflow-y: auto;
+    border-radius: 8px;
+}
+
+
+.voting h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+
+.voting form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+
+.voting form div {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.voting label {
+    font-size: 1.1rem;
+    color: #222;
+}
+
+
+.voting select {
+    text-align: center;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease;
+    cursor: pointer;
+    background-color: white;
+}
+
+
+.voting select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+
+.voting-submit {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.voting-submit button {
+    width: 100px;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+.voting-submit button:hover {
+    background-color: #0056be;
+}
+
+
+.voting-submit button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}

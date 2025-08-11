@@ -1,9 +1,12 @@
+import useAuth from '../../hooks/auth';
 import '../css/Settings.css'
 import Layout from "../Layout";
 import { useNavigate } from "react-router-dom";
 
 function Settings(){
     const navigate = useNavigate();
+
+    useAuth('admin');
 
     return(
         <Layout
