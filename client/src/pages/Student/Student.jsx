@@ -1,22 +1,53 @@
-import React from "react";
-import "./css/Student.css"
-import Layout from "../Layout";
+import { useNavigate } from 'react-router-dom';
+import './css/Student.css'
+import { useEffect, useRef, useState } from 'react';
+import { jwtDecode } from 'jwt-decode';
+import useAuth from '../../hooks/auth';
+import Layout from '../Layout';
 
- function Student (){
-   return(
+
+function Student() {
+  const [name, setName] = useState('');
+
+  const navigate = useNavigate();
+
+  useAuth('voter');
+
+  const effectRan = useRef(false);
+
+  useEffect(() => {
+    if (!effectRan.current) {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        navigate('/');
+        return;
+      }
+
+      const decoded = jwtDecode(token);
+      setName(decoded.name);
+    }
+
+    effectRan.current = true;
+  }, [navigate]);
+
+
+  return (
     <Layout
       headerContent={'Gardner College E-Voting Student Dashboard'}
       mainContent={
-        <div className='admin-dashboard'>
-          <h2>Welcome back, Student</h2>
+        <div className='student-dashboard'>
+          <h2>Welcome back, {name}</h2>
         </div>
       }
       footerContent={
         <ul>
-          <li><a href="/Student/Election">Election</a></li>
-          <li><a href="/Student/settings">Settings</a></li>
+          <li><a href='/student/elections'>Elections</a></li>
+          <li><a href='/settings'>Settings</a></li>
         </ul>
       }
     ></Layout>
-   )
- } export default Student;
+  )
+}
+
+
+export default Student;

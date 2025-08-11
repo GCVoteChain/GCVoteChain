@@ -350,7 +350,7 @@ function Candidates () {
                 <ul>
                     <li><a href="/admin/registration">Registration</a></li>
                     <li><a href="/admin/elections">Elections</a></li>
-                    <li><a href="/settings">Settings</a></li>
+                    <li><a href="/admin/settings">Settings</a></li>
                 </ul>
             }
         ></Layout>
