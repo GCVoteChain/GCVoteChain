@@ -16,3 +16,116 @@
     font-size: 0.9em;
     color: #666;
 }
+
+
+.elections-footer {
+    width: 100%;
+}
+
+
+.elections-verify-uuid {
+    position: absolute;
+    bottom: 80px;
+    right: 20px;
+    padding: 10px 15px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+
+.elections-verify-uuid:hover {
+    background-color: #014292;
+}
+
+
+.elections-verification-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+
+.elections-verification-modal-form {
+    position: relative;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+}
+
+
+.elections-verification-modal-form-close {
+    position: absolute;
+    top: 2px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+
+.elections-verification-modal-form-close:hover {
+    color: #ff3333;
+}
+
+
+.elections-verification-modal-form-input-box {
+    margin-bottom: 15px;
+}
+
+
+.elections-verification-modal-form-input-box input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+
+.elections-verification-modal-form-input-box input:focus {
+    border-color: #0056be;
+    outline: none;
+}
+
+
+.elections-verification-modal-form-submit button {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+.elections-verification-modal-form-submit button:hover {
+    background-color: #0056be;
+}
+
+
+.elections-verification-modal-form-submit button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}

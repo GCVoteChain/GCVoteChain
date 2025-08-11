@@ -19,9 +19,10 @@ function Election() {
     
     const [elections, setElections] = useState([]);
     
-    const [selectedElection, setSelectedElection] = useState({});
-    
-    
+    const [UUID, setUUID] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [showVoteVerificationModal, setShowVoteVerificationModal] = useState(false);
+
     useAuth('voter');
 
     const effectRan = useRef(false);
@@ -57,6 +58,20 @@ function Election() {
         effectRan.current = true;
     }, [navigate]);
 
+
+    const uuidHandler = async(e) => {
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+
+        } catch (err) {
+
+        } finally {
+            setLoading(false);
+        }
+    }
+
     
     return(
         <Layout
@@ -67,7 +82,7 @@ function Election() {
                         <ul className='elections-list'>
                             {elections.map((election) => (
                                 <li key={election.id} className='election-item' onClick={() => {
-                                    setSelectedElection(election);
+                                    navigate(`/student/elections/${election.id}/candidates`);
                                 }}>
                                     <div className='election-item-top'>
                                         <div className='election-item-name'>{election.title}</div>
@@ -94,13 +109,45 @@ function Election() {
                             ))}
                         </ul>
                     )}
+
+                    {showVoteVerificationModal && (
+                        <div className='elections-verification-modal'>
+                            <div className='elections-verification-modal-form'>
+                                <button className='elections-verification-modal-form-close' onClick={() => setShowVoteVerificationModal(false)}>×</button>
+                                <h3>Vote Verification</h3>
+                                <form onSubmit={uuidHandler}>
+                                    <div className='elections-verification-modal-form-input-box'>
+                                        <input
+                                            type='text'
+                                            value={UUID}
+                                            placeholder={'UUID'}
+                                            onChange={(e) => setUUID(e.target.value)}
+                                            required
+                                            disabled={loading}
+                                        />
+                                    </div>
+                                    <div className='elections-verification-modal-form-submit'>
+                                        <button
+                                            type='submit'
+                                            disabled={UUID.trim() === '' || loading}
+                                        >
+                                            Submit
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
                 </div>
             }
             footerContent={
-                <ul>
-                    <li><a href="/student/elections">Elections</a></li>
-                    <li><a href="/student/settings">Settings</a></li>
-                </ul>
+                <div className='elections-footer'>
+                    <div className='elections-verify-uuid' onClick={() => setShowVoteVerificationModal(true)}>Verify Vote</div>
+                    <ul>
+                        <li><a href="/student/elections">Elections</a></li>
+                        <li><a href="/student/settings">Settings</a></li>
+                    </ul>
+                </div>
             }
         ></Layout>
     );

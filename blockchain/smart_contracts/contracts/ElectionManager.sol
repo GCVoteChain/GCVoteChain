@@ -75,4 +75,8 @@ contract ElectionManager {
         e.encryptedVotes.push(encryptedVote);
         e.hasVoted[voterId] = true;
     }
+
+    function getEncryptedVotes(bytes32 electionId) external view returns (bytes[] memory) {
+        require(!elections[electionId].onGoing, 'This election is still ongoing');
+    }
 }
