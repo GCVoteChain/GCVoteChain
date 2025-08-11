@@ -1,4 +1,4 @@
-import './css/Settings.css'
+import '../css/Settings.css'
 import Layout from "../Layout";
 import { useNavigate } from "react-router-dom";
 
