@@ -57,6 +57,11 @@ const getAvailableElectionsStmt = db.prepare(`
         END ASC;
 `);
 
+const getByIdStmt = db.prepare(`
+    SELECT * FROM elections
+    WHERE id = ?
+`);
+
 
 const addAsync = promisify(addElectionStmt.run.bind(addElectionStmt));
 const setScheduleAsync = promisify(setElectionScheduleStmt.run.bind(setElectionScheduleStmt));
@@ -64,6 +69,7 @@ const setStatusAsync = promisify(setElectionStatusStmt.run.bind(setElectionStatu
 const removeAsync = promisify(removeElectionStmt.run.bind(removeElectionStmt));
 const getAllAsync = promisify(getElectionsStmt.all.bind(getElectionsStmt));
 const getAvailableElectionsAsync = promisify(getAvailableElectionsStmt.all.bind(getAvailableElectionsStmt));
+const getByIdAsync = promisify(getByIdStmt.get.bind(getByIdStmt));
 
 
 async function addElection(id, title) {
@@ -96,6 +102,11 @@ async function getAvailableElections() {
 }
 
 
+async function getById(id) {
+    return getByIdAsync(id);
+}
+
+
 module.exports = {
     addElectionStmt,
     setElectionScheduleStmt,
@@ -103,6 +114,7 @@ module.exports = {
     removeElectionStmt,
     getElectionsStmt,
     getAvailableElectionsStmt,
+    getByIdStmt,
 
     addElection,
     setElectionSchedule,
@@ -110,4 +122,5 @@ module.exports = {
     removeElection,
     getAllElections,
     getAvailableElections,
+    getById,
 };
