@@ -58,8 +58,6 @@ async function get(req, res) {
 
         const candidates = await candidateModel.getAllCandidates(electionId);
 
-        console.log(candidates);
-
         res.send(candidates);
     } catch (err) {
         console.error('Error fetching candidates:', err);

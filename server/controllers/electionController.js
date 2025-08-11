@@ -96,13 +96,13 @@ async function getAll(req, res) {
 
 async function get(req, res) {
     try {
-        const { id } = req.params;
+        const { electionId } = req.params;
         
-        const election = await electionModel.getById(id);
+        const election = await electionModel.getById(electionId);
 
         res.send(election);
     } catch (err) {
-        console.error(`Error fetching election with ID: ${id}:`, err);
+        console.error(`Error fetching election with ID: ${electionId}:`, err);
         res.status(500).send({ message: 'Failed to get election' });
     }
 }
