@@ -29,7 +29,7 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS candidates (
     id TEXT NOT NULL UNIQUE,
-    student_id NOT NULL UNIQUE,
+    student_id NOT NULL,
     position TEXT NOT NULL,
     name TEXT NOT NULL,
     election_id TEXT NOT NULL,
