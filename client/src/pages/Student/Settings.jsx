@@ -35,7 +35,7 @@ function Settings(){
             footerContent={
                 <ul>
                     <li><a href="/student/elections">Elections</a></li>
-                    <li><a href="/student/elections">Settings</a></li>
+                    <li><a href="/student/settings">Settings</a></li>
                 </ul>
             }
         ></Layout>
