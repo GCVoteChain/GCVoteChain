@@ -45,16 +45,22 @@ const getElectionsStmt = db.prepare(`
 
 const getAvailableElectionsStmt = db.prepare(`
     SELECT * FROM elections
-    WHERE id = ? AND status != 'draft'
+    WHERE status != 'draft'
     ORDER BY
         CASE status
             WHEN 'open' THEN 1
             WHEN 'scheduled' THEN 2
+            WHEN 'closed' THEN 3
         END,
+
         CASE
             WHEN status = 'open' THEN end_time
             WHEN status = 'scheduled' THEN start_time
-        END ASC;
+        END ASC,
+
+        CASE
+            WHEN status = 'closed' THEN end_time
+        END DESC;
 `);
 
 const getByIdStmt = db.prepare(`
