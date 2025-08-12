@@ -30,7 +30,7 @@ router.delete('/remove', authenticateToken, authenticateRole('admin'), electionC
 
 
 // Get election results route
-// router.get('/:electionId/results', authenticateToken, authenticateRole('voter', 'admin'), electionController.getResults);
+router.get('/:electionId/results', authenticateToken, authenticateRole('voter', 'admin'), electionController.results);
 
 
 module.exports = router;

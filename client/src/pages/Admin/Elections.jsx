@@ -323,6 +323,15 @@ function Election() {
                                     }}>Set Schedule</button>
                                 </div>
 
+                                <div className='selected-election-div-results'>
+                                    <button
+                                        disabled={selectedElection.status !== 'closed'}
+                                        onClick={() => navigate(`/elections/${selectedElection.id}/results`)}
+                                    >
+                                        Results
+                                    </button>
+                                </div>
+
                                 {showElectionTimeModal && (
                                     <div className='selected-election-time-modal'>
                                         <div className='selected-election-time-modal-form'>

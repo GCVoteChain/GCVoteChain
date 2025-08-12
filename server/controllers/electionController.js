@@ -1,5 +1,6 @@
 const { keccak256, solidityPacked } = require('ethers');
 const electionModel = require('../models/electionModel.js');
+const candidateModel = require('../models/candidateModel.js');
 // const { loadContracts } = require('../services/contract.js');
 
 
@@ -108,11 +109,27 @@ async function get(req, res) {
 }
 
 
+async function results(req, res) {
+    try {
+        const { electionId } = req.params;
+
+        const results = candidateModel.getVotes(electionId);
+        console.log(results);
+
+        res.send(results);
+    } catch (err) {
+        console.error('Error retrieving the election results:', err);
+        res.status(500).send({ message: 'Failed to get election' });
+    }
+}
+
+
 module.exports = {
     add,
     setSchedule,
     setStatus,
     remove,
     getAll,
-    get
+    get,
+    results
 }

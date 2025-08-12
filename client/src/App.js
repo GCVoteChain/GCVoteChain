@@ -31,7 +31,7 @@ function App() {
       <Route path="/admin/elections/:electionId/candidates" element={<AdminCandidates/>}/>
       <Route path="/admin/settings" element={<AdminSettings/>}/>
 
-      <Route path="/results" element={<Result/>}/>
+      <Route path="/elections/:electionId/results" element={<Result/>}/>
 
       <Route path='*' element={<h1>404 - Page Not Found</h1>}/>
     </Routes> 

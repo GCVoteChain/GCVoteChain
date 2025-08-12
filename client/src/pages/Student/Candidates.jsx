@@ -105,16 +105,22 @@ function Candidates () {
                 <div className='candidates-div'>
                     <div className='candidates-div-header'>
                         <h2>{selectedElection.title}</h2>
-                        {selectedElection.status === 'open' && (
+                        <div className='candidates-div-header-buttons'>
                             <button
-                                className='candidates-div-header-vote'
+                                type='button'
+                                onClick={() => navigate(`/elections/${selectedElection.id}/results`)}
+                                disabled={selectedElection.status !== 'closed'}
+                            >
+                                Results
+                            </button>
+                            <button
                                 type='button'
                                 onClick={() => navigate(`/student/elections/${selectedElection.id}/vote`)}
                                 disabled={selectedElection.status !== 'open'}
                             >
                                 Vote
                             </button>
-                        )}
+                        </div>
                     </div>
                     <div className='candidates-div-list'>
                         {POSITIONS.map((position) => (

@@ -1,5 +1,6 @@
-.candidates-div-header-vote {
+.candidates-div-header button {
     padding: 15px 20px;
+    margin-left: 20px;
     background-color: #007BFF;
     color: white;
     border: none;
@@ -11,6 +12,12 @@
 }
 
 
-.candidates-div-header-vote:hover {
+.candidates-div-header button:hover {
     background-color: #014292;
+}
+
+
+.candidates-div-header button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }

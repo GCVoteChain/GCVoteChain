@@ -22,11 +22,18 @@ const getAllCandidatesStmt = db.prepare(`
     WHERE election_id = ?
 `);
 
+const getVotesStmt = db.prepare(`
+    SELECT student_id, position, name, vote_count FROM candidates
+    WHERE election_id = ?
+    ORDER BY vote_count DESC
+`);
+
 
 const insertAsync = promisify(insertCandidateStmt.run.bind(insertCandidateStmt));
 const updateAsync = promisify(updateCandidateStmt.run.bind(updateCandidateStmt));
 const removeAsync = promisify(removeCandidateStmt.run.bind(removeCandidateStmt));
 const getAllAsync = promisify(getAllCandidatesStmt.all.bind(getAllCandidatesStmt));
+const getVotesAsync = promisify(getVotesStmt.all.bind(getVotesStmt));
 
 
 async function addCandidate(candidateId, studentId, electionId, name, position) {
@@ -49,14 +56,21 @@ async function getAllCandidates(electionId) {
 }
 
 
+async function getVotes(electionId) {
+    return getVotesAsync(electionId) || [];
+}
+
+
 module.exports = {
     insertCandidateStmt,
     updateCandidateStmt,
     removeCandidateStmt,
     getAllCandidatesStmt,
+    getVotesStmt,
     
     addCandidate,
     updateCandidate,
     removeCandidate,
-    getAllCandidates
+    getAllCandidates,
+    getVotes
 };
