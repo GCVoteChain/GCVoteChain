@@ -68,47 +68,42 @@ db.exec(`
 
 
 cron.schedule('*/5 * * * * *', () => {
-  const now = Math.floor(new Date() / 1000);
+  const now = Math.floor(Date.now() / 1000);
 
-  db.exec(`
+  // Open elections
+  const scheduledElections = db.prepare(`
     SELECT id FROM elections
     WHERE status = 'scheduled' AND start_time <= ? AND end_time > ?
-  `, [now, now], async(err, rows) => {
-    if (err) return console.error('Error fetching elections to open:', err);
+  `).all(now, now);
 
-    // const contracts = await loadContracts();
+  for (const { id } of scheduledElections) {
+    try {
+      // const tx = await contracts.electionManager.startElection(id);
+      // await tx.wait();
 
-    for (const { id } of rows) {
-      try {
-        // const tx = await contracts.electionManager.startElection(id);
-        // await tx.wait();
-
-        db.run(`UPDATE elections SET status = 'open' WHERE id = ?`, [id]);
-      } catch (error) {
-        console.error(`Failed to start election ${id}:`, error);
-      }
+      db.prepare(`UPDATE elections SET status = 'open' WHERE id = ?`).run(id);
+    } catch (error) {
+      console.error(`Failed to start election ${id}:`, error);
     }
-  });
+  }
 
-  db.exec(`
+  
+  // Close elections
+  const openElections = db.prepare(`
     SELECT id FROM elections
     WHERE status = 'open' AND end_time <= ?
-  `, [now], async(err, rows) => {
-    if (err) return console.error('Error fetching elections to close:', err);
+  `).all(now);
 
-    // const contracts = await loadContracts();
+  for (const { id } of openElections) {
+    try {
+      // const txStop = await contracts.electionManager.stopElection(id);
+      // await txStop.wait();
 
-    for (const { id } of rows) {
-      try {
-        // const txStop = await contracts.electionManager.stopElection(id);
-        // await txStop.wait();
-
-        db.run(`UPDATE elections SET status = 'closed' WHERE id = ?`, [id]);
-      } catch (error) {
-        console.error(`Failed to end election ${id}:`, error);
-      }
+      db.prepare(`UPDATE elections SET status = 'closed' WHERE id = ?`).run(id);
+    } catch (error) {
+      console.error(`Failed to end election ${id}:`, error);
     }
-  });
+  }
 });
 
 

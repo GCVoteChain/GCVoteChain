@@ -32,7 +32,7 @@ async function setSchedule(req, res) {
         const start = Math.floor(new Date(startTime).getTime() / 1000);
         const end = Math.floor(new Date(endTime).getTime() / 1000);
 
-        const now = Math.floor(new Date().getTime() / 1000);
+        const now = Math.floor(Date.now() / 1000);
         
         if (start >= end) return res.status(400).send({ message: 'Start time must be before the end time' });
         if (start < now) return res.status(400).send({ message: 'Start time must be in the future' });

@@ -59,7 +59,7 @@ async function login(req, res) {
         }
         
         if (user.enabled_2fa) {
-            const currentTime = Math.floor(new Date().getTime() / 1000);
+            const currentTime = Math.floor(Date.now() / 1000);
 
             if (!code) {
                 const isCodeSent = codeModel.isCodeSent(studentId, currentTime);
@@ -169,8 +169,7 @@ async function generateCode(studentId) {
             code += charset[randomValues[i] % charset.length];
         }
 
-        const now = new Date();
-        const expiresAt = Math.floor((now.getTime() + 300000) / 1000);
+        const expiresAt = Math.floor((Date.now() + 300000) / 1000);
 
         codeModel.addCode(studentId, code, expiresAt);
 
