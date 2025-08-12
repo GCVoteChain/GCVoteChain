@@ -34,7 +34,7 @@ const bcrypt = require('bcryptjs');
 
 const routes = require('./routes/routes');
 
-const models = require('./models/models');
+const userModel = require('./models/userModel');
 
 const db = require('./data/db');
 
@@ -72,16 +72,15 @@ app.use(routes);
 
   for (const user of defaultUsers) {
     try {
-      const userExists = await models.user.getUser(user.username);
-  
-      if (!userExists) {
-        const hashedPassword = await bcrypt.hash(user.password, 10);
-        const voterId = keccak256(solidityPacked(['string', 'string'], [user.username, user.role]));
+      const userExists = userModel.getUser(user.username);
+      if (userExists) continue;
+      
+      const hashedPassword = await bcrypt.hash(user.password, 10);
+      const voterId = keccak256(solidityPacked(['string', 'string'], [user.username, user.role]));
 
-        await models.user.registerUser(voterId, user.username, hashedPassword, user.name, '', user.role);
-  
-        console.log(`Initialized user: ${user.username}`);
-      }
+      userModel.registerUser(voterId, user.username, hashedPassword, user.name, '', user.role);
+
+      console.log(`Initialized user: ${user.username}`);
     } catch (err) {
       console.error('Failed to initialize users:', err);
     }
@@ -102,17 +101,3 @@ app.use(routes);
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-
-
-['SIGINT', 'SIGTERM', 'SIGQUIT']
-.forEach(signal => process.on(signal, () => {
-  const checkForError = (err) => {
-    if (err) console.error('Error:', err.message);
-  };
-
-  models.finalize();
-
-  db.close(checkForError);
-  process.exit();
-}));

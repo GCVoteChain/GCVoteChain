@@ -69,59 +69,42 @@ const getByIdStmt = db.prepare(`
 `);
 
 
-const addAsync = promisify(addElectionStmt.run.bind(addElectionStmt));
-const setScheduleAsync = promisify(setElectionScheduleStmt.run.bind(setElectionScheduleStmt));
-const setStatusAsync = promisify(setElectionStatusStmt.run.bind(setElectionStatusStmt));
-const removeAsync = promisify(removeElectionStmt.run.bind(removeElectionStmt));
-const getAllAsync = promisify(getElectionsStmt.all.bind(getElectionsStmt));
-const getAvailableElectionsAsync = promisify(getAvailableElectionsStmt.all.bind(getAvailableElectionsStmt));
-const getByIdAsync = promisify(getByIdStmt.get.bind(getByIdStmt));
-
-
-async function addElection(id, title) {
-    return addAsync(id, title);
+function addElection(id, title) {
+    return addElectionStmt.run(id, title);
 }
 
 
-async function setElectionSchedule(id, startTime, endTime) {
-    return setScheduleAsync(startTime, endTime, id);
+function setElectionSchedule(id, startTime, endTime) {
+    return setElectionScheduleStmt.run(startTime, endTime, id);
 }
 
 
-async function setElectionStatus(id, status) {
-    return setStatusAsync(status, id);
+function setElectionStatus(id, status) {
+    return setElectionStatusStmt.run(status, id);
 }
 
 
-async function removeElection(id) {
-    return removeAsync(id);
+function removeElection(id) {
+    return removeElectionStmt.run(id);
 }
 
 
-async function getAllElections() {
-    return getAllAsync() || [];
+function getAllElections() {
+    return getElectionsStmt.all() || [];
 }
 
 
-async function getAvailableElections() {
-    return getAvailableElectionsAsync() || [];
+function getAvailableElections() {
+    return getAvailableElectionsStmt.all() || [];
 }
 
 
-async function getById(id) {
-    return getByIdAsync(id);
+function getById(id) {
+    return getByIdStmt.get(id);
 }
 
 
 module.exports = {
-    addElectionStmt,
-    setElectionScheduleStmt,
-    setElectionStatusStmt,
-    removeElectionStmt,
-    getElectionsStmt,
-    getAvailableElectionsStmt,
-    getByIdStmt,
-
     addElection,
     setElectionSchedule,
     setElectionStatus,

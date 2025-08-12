@@ -37,7 +37,7 @@ async function register(req, res) {
         // const tx = await contracts.voterManager.registerVoter(voterId);
         // await tx.wait();
 
-        await userModel.registerUser(voterId, studentId, hashedPassword, name, email, role);
+        userModel.registerUser(voterId, studentId, hashedPassword, name, email, role);
         res.send({ message: 'Registered successfully'});
     } catch (err) {
         console.error('Error registering:', err);
@@ -50,7 +50,7 @@ async function login(req, res) {
     try {
         const { studentId, password, code } = req.body;
         
-        const user = await userModel.getUser(studentId);
+        const user = userModel.getUser(studentId);
         if (!user) return res.status(401).send({ message: 'Incorrect username/password' });
 
         const match = await bcrypt.compare(password, user.password);
@@ -62,7 +62,8 @@ async function login(req, res) {
             const currentTime = Math.floor(new Date().getTime() / 1000);
 
             if (!code) {
-                if (codeModel.isCodeSent(studentId, currentTime)) {
+                const isCodeSent = codeModel.isCodeSent(studentId, currentTime);
+                if (!isCodeSent) {
                     const generatedCode = await generateCode(studentId);
 
                     const mailOptions = {
@@ -91,7 +92,7 @@ async function login(req, res) {
                 });
             }
 
-            const validCode = await codeModel.isCodeValid(studentId, code, currentTime);
+            const validCode = codeModel.isCodeValid(studentId, code, currentTime);
             if (!validCode) {
                 return res.status(401).send({ message: 'Incorrect code. Try again.' });
             }
@@ -117,7 +118,7 @@ async function updatePassword(req, res) {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        await userModel.updatePassword(studentId, hashedPassword);
+        userModel.updatePassword(studentId, hashedPassword);
 
         res.send({ message: 'Password changed successfully' });
     } catch (err) {
@@ -131,7 +132,7 @@ async function get2FAState(req, res) {
     try {
         const { studentId } = req.params;
 
-        const user = await userModel.get2FAState(studentId);
+        const user = userModel.get2FAState(studentId);
 
         res.send({ state: user.enabled_2fa });
     } catch (err) {
@@ -145,9 +146,9 @@ async function toggle2FA(req, res) {
     try {
         const { studentId } = req.body;
 
-        const state = await userModel.get2FAState(studentId);
+        const state = userModel.get2FAState(studentId);
         
-        await userModel.toggle2FA(studentId, !state.enabled_2fa);
+        userModel.toggle2FA(studentId, !state.enabled_2fa);
 
         res.send({ message: `2FA is ${(!state.enabled_2fa ? 'enabled' : 'disabled')}.`});
     } catch (err) {
@@ -158,7 +159,7 @@ async function toggle2FA(req, res) {
 
 
 async function generateCode(studentId) {
-    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     
     try {
         let code = '';
@@ -171,7 +172,7 @@ async function generateCode(studentId) {
         const now = new Date();
         const expiresAt = Math.floor((now.getTime() + 300000) / 1000);
 
-        await codeModel.addCode(studentId, code, expiresAt);
+        codeModel.addCode(studentId, code, expiresAt);
 
         return code;
     } catch (err) {

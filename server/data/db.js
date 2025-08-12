@@ -1,11 +1,26 @@
 const path = require('path');
 const fs = require('fs');
-const { Database } = require('sqlite3')
 const cron = require('node-cron');
+const crypto = require('crypto');
 // const { loadContracts } = require('../services/contract');
 
-const db = new Database(path.join(__dirname, './database.db'), { verbose: console.log });
+const db = require('better-sqlite3-multiple-ciphers')('./data/database.db');
 
+
+const envPath = path.join(__dirname, '.env');
+if (!fs.existsSync(envPath)) {
+  fs.writeFileSync(envPath, `DB_KEY=${crypto.randomBytes(64).toString('hex')}`);
+} else {
+  const envFile = fs.readFileSync(envPath, 'utf8');
+
+  const exists = envFile.split('\n').some(l => l.trim().startsWith('DB_KEY='));
+  if (!exists) {
+    fs.appendFileSync(envPath, `DB_KEY=${crypto.randomBytes(64).toString('hex')}\n`);
+  }
+}
+
+db.pragma(`cipher='aes256cbc'`);
+db.pragma(`key='${process.env.DB_KEY}'`);
 
 db.exec(`
   PRAGMA foreign_keys = ON;
@@ -55,46 +70,44 @@ db.exec(`
 cron.schedule('*/5 * * * * *', () => {
   const now = Math.floor(new Date() / 1000);
 
-  db.serialize(() => {
-    db.all(`
-      SELECT id FROM elections
-      WHERE status = 'scheduled' AND start_time <= ? AND end_time > ?
-    `, [now, now], async(err, rows) => {
-      if (err) return console.error('Error fetching elections to open:', err);
-  
-      // const contracts = await loadContracts();
-  
-      for (const { id } of rows) {
-        try {
-          // const tx = await contracts.electionManager.startElection(id);
-          // await tx.wait();
-  
-          db.run(`UPDATE elections SET status = 'open' WHERE id = ?`, [id]);
-        } catch (error) {
-          console.error(`Failed to start election ${id}:`, error);
-        }
+  db.exec(`
+    SELECT id FROM elections
+    WHERE status = 'scheduled' AND start_time <= ? AND end_time > ?
+  `, [now, now], async(err, rows) => {
+    if (err) return console.error('Error fetching elections to open:', err);
+
+    // const contracts = await loadContracts();
+
+    for (const { id } of rows) {
+      try {
+        // const tx = await contracts.electionManager.startElection(id);
+        // await tx.wait();
+
+        db.run(`UPDATE elections SET status = 'open' WHERE id = ?`, [id]);
+      } catch (error) {
+        console.error(`Failed to start election ${id}:`, error);
       }
-    });
-  
-    db.all(`
-      SELECT id FROM elections
-      WHERE status = 'open' AND end_time <= ?
-    `, [now], async(err, rows) => {
-      if (err) return console.error('Error fetching elections to close:', err);
-  
-      // const contracts = await loadContracts();
-  
-      for (const { id } of rows) {
-        try {
-          // const txStop = await contracts.electionManager.stopElection(id);
-          // await txStop.wait();
-  
-          db.run(`UPDATE elections SET status = 'closed' WHERE id = ?`, [id]);
-        } catch (error) {
-          console.error(`Failed to end election ${id}:`, error);
-        }
+    }
+  });
+
+  db.exec(`
+    SELECT id FROM elections
+    WHERE status = 'open' AND end_time <= ?
+  `, [now], async(err, rows) => {
+    if (err) return console.error('Error fetching elections to close:', err);
+
+    // const contracts = await loadContracts();
+
+    for (const { id } of rows) {
+      try {
+        // const txStop = await contracts.electionManager.stopElection(id);
+        // await txStop.wait();
+
+        db.run(`UPDATE elections SET status = 'closed' WHERE id = ?`, [id]);
+      } catch (error) {
+        console.error(`Failed to end election ${id}:`, error);
       }
-    });
+    }
   });
 });
 

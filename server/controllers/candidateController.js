@@ -8,7 +8,7 @@ async function add(req, res) {
 
         const candidateId = keccak256(solidityPacked(['string', 'string', 'string'], [electionId, studentId, position]));
 
-        await candidateModel.addCandidate(candidateId, studentId, electionId, name, position);
+        candidateModel.addCandidate(candidateId, studentId, electionId, name, position);
 
         res.send({ message: 'Candidate added successfully' });
     } catch (err) {
@@ -22,7 +22,7 @@ async function update(req, res) {
     try {
         const { studentId, electionId, name, position } = req.body;
 
-        await candidateModel.updateCandidate(electionId, studentId, name, position);
+        candidateModel.updateCandidate(electionId, studentId, name, position);
 
         res.send({ message: 'Candidate updated successfully' });
     } catch (err) {
@@ -39,7 +39,7 @@ async function remove(req, res) {
             return res.status(400).send({ message: 'Invalid or missing Election ID and/or Student ID.\n\nPlease refresh the page.'})
         }
 
-        await candidateModel.removeCandidate(electionId, studentId);
+        candidateModel.removeCandidate(electionId, studentId);
 
         res.send({ message: 'Candidate removed successfully' });
     } catch (err) {
@@ -56,7 +56,7 @@ async function get(req, res) {
             return res.status(400).send({ message: 'Missing election ID'});
         }
 
-        const candidates = await candidateModel.getAllCandidates(electionId);
+        const candidates = candidateModel.getAllCandidates(electionId);
 
         res.send(candidates);
     } catch (err) {

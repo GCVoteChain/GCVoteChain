@@ -1,5 +1,4 @@
 const db = require('../data/db');
-const { promisify } = require('util');
 
 const registerUserStmt = db.prepare(`
     INSERT INTO users (voter_id, student_id, password, name, email, role)
@@ -29,45 +28,32 @@ const toggle2FAStateStmt = db.prepare(`
 `);
 
 
-const registerUserAsync = promisify(registerUserStmt.run.bind(registerUserStmt));
-const getUserAsync = promisify(getUserStmt.get.bind(getUserStmt));
-const updatePasswordAsync = promisify(updatePasswordStmt.run.bind(updatePasswordStmt));
-const get2FAStateAsync = promisify(get2FAStateStmt.get.bind(get2FAStateStmt));
-const toggle2FAStateAsync = promisify(toggle2FAStateStmt.run.bind(toggle2FAStateStmt));
-
-
-async function registerUser(voterId, studentId, hashedPassword, name, email, role) {
-    return registerUserAsync(voterId, studentId, hashedPassword, name, email, role);
+function registerUser(voterId, studentId, hashedPassword, name, email, role) {
+    return registerUserStmt.run(voterId, studentId, hashedPassword, name, email, role);
 }
 
 
-async function getUser(studentId) {
-    return getUserAsync(studentId)
+function getUser(studentId) {
+    return getUserStmt.get(studentId);
 }
 
 
-async function updatePassword(studentId, newPassword) {
-    return updatePasswordAsync(newPassword, studentId);
+function updatePassword(studentId, newPassword) {
+    return updatePasswordStmt.run(newPassword, studentId);
 }
 
 
-async function get2FAState(studentId) {
-    return get2FAStateAsync(studentId);
+function get2FAState(studentId) {
+    return get2FAStateStmt.get(studentId);
 }
 
 
-async function toggle2FA(studentId, newState) {
-    return toggle2FAStateAsync(newState, studentId);
+function toggle2FA(studentId, newState) {
+    return toggle2FAStateStmt.run(Number(newState), studentId);
 }
 
 
 module.exports = {
-    registerUserStmt,
-    getUserStmt,
-    updatePasswordStmt,
-    get2FAStateStmt,
-    toggle2FAStateStmt,
-
     registerUser,
     getUser,
     updatePassword,

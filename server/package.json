@@ -12,6 +12,7 @@
   "type": "commonjs",
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "better-sqlite3-multiple-ciphers": "^12.2.0",
     "body-parser": "^2.2.0",
     "circom": "^0.5.46",
     "cors": "^2.8.5",

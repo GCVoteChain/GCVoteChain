@@ -1,5 +1,4 @@
 const db = require('../data/db');
-const { promisify } = require('util');
 
 const addCodeStmt = db.prepare(`
     INSERT INTO auth_codes (student_id, code, expires_at)
@@ -17,31 +16,22 @@ const isCodeValidStmt = db.prepare(`
 `);
 
 
-const addCodeAsync = promisify(addCodeStmt.run.bind(addCodeStmt));
-const isCodeSentAsync = promisify(isCodeSentStmt.get.bind(isCodeSentStmt));
-const isCodeValidAsync = promisify(isCodeValidStmt.get.bind(isCodeValidStmt));
-
-
-async function addCode(studentId, code, expiresAt) {
-    return addCodeAsync(studentId, code, expiresAt);
+function addCode(studentId, code, expiresAt) {
+    return addCodeStmt.run(studentId, code, expiresAt);
 }
 
 
-async function isCodeSent(studentId, currentTime) {
-    return isCodeSentAsync(studentId, currentTime);
+function isCodeSent(studentId, currentTime) {
+    return isCodeSentStmt.get(studentId, currentTime);
 }
 
 
-async function isCodeValid(studentId, code, currentTime) {
-    return (isCodeValidAsync(studentId, code, currentTime) || false);
+function isCodeValid(studentId, code, currentTime) {
+    return isCodeValidStmt.get(studentId, code, currentTime);
 }
 
 
 module.exports = {
-    addCodeStmt,
-    isCodeSentStmt,
-    isCodeValidStmt,
-
     addCode,
     isCodeSent,
     isCodeValid

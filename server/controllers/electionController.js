@@ -15,7 +15,7 @@ async function add(req, res) {
         // const tx = await contracts.electionManager.createElection(id, title);
         // await tx.wait();
 
-        await electionModel.addElection(id, title);
+        electionModel.addElection(id, title);
 
         res.send({ message: 'Election added successfully' });
     } catch (err) {
@@ -42,7 +42,7 @@ async function setSchedule(req, res) {
         // const tx = await contracts.electionManager.setElectionSchedule(id, start, end);
         // await tx.wait();
 
-        await electionModel.setElectionSchedule(id, start, end);
+        electionModel.setElectionSchedule(id, start, end);
 
         res.send({ message: 'Election scheduled successfully' });
     } catch (err) {
@@ -56,7 +56,7 @@ async function setStatus(req, res) {
     try {
         const { id, status } = req.body;
 
-        await electionModel.setElectionStatus(id, status);
+        electionModel.setElectionStatus(id, status);
 
         res.send({ message: 'Election status updated successfully' });
     } catch (err) {
@@ -70,7 +70,7 @@ async function remove(req, res) {
     try {
         const { id } = req.body;
 
-        await electionModel.addElection(id, title);
+        electionModel.addElection(id, title);
 
         res.send({ message: 'Election added successfully' });
     } catch (err) {
@@ -84,8 +84,8 @@ async function getAll(req, res) {
     try {
         let elections;
         
-        if (req.user.role === 'voter') elections = await electionModel.getAvailableElections();
-        else elections = await electionModel.getAllElections();
+        if (req.user.role === 'voter') elections = electionModel.getAvailableElections();
+        else elections = electionModel.getAllElections();
 
         res.send(elections);
     } catch (err) {
@@ -99,7 +99,7 @@ async function get(req, res) {
     try {
         const { electionId } = req.params;
         
-        const election = await electionModel.getById(electionId);
+        const election = electionModel.getById(electionId);
 
         res.send(election);
     } catch (err) {
