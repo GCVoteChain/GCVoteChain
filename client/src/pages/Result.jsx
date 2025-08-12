@@ -1,5 +1,4 @@
 import './css/Result.css';
-import Layout from "./Layout";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import React from 'react';
@@ -10,7 +9,6 @@ function Result(){
     const navigate = useNavigate();
     const [results, setResults] = useState({});
     const [loading, setLoading] = useState(true);
-    const [selectedElection, setSelectedElection] = useState(null);
 
     const [isElectionOver, setIsElectionOver] = useState(false);
     
@@ -66,7 +64,6 @@ function Result(){
                     }
                     
                     const election = await getElection.json();
-                    setSelectedElection(election);
 
                     setIsElectionOver(Date.now() > election.end_time * 1000);
 
@@ -120,8 +117,8 @@ function Result(){
         }
 
         const role = jwtDecode(token).role;
-        if (role === 'voter') navigate(`/student/elections/${electionId}`);
-        else if (role === 'admin') navigate(`/admin/eletiond/${electionId}`);
+        if (role === 'voter') navigate(`/student/elections/${electionId}/candidates`);
+        else if (role === 'admin') navigate(`/admin/eletiond/${electionId}/candidates`);
     }
     
 
