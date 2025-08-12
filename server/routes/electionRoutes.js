@@ -33,4 +33,8 @@ router.delete('/remove', authenticateToken, authenticateRole('admin'), electionC
 router.get('/:electionId/results', authenticateToken, authenticateRole('voter', 'admin'), electionController.results);
 
 
+// Vote route
+router.post('/:electionId/vote', authenticateToken, authenticateRole('voter'), electionController.vote);
+
+
 module.exports = router;

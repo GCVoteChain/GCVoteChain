@@ -4,6 +4,9 @@ import { useNavigate,useParams } from "react-router-dom";
 import useAuth from "../../hooks/auth";
 import { useEffect,useMemo,useRef,useState } from "react";
 
+import eccrypto from 'eccrypto';
+
+
 function Voting() {
     const navigate = useNavigate();
 
@@ -107,15 +110,74 @@ function Voting() {
     });
 
 
+    const encryptVote = async(token) => {
+        try {
+            const res = await fetch(
+                '/api/crypto/public-key',
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            const data = await res.json();
+            
+            const publicKey = Buffer.from(data, 'hex');
+
+            const payload = Buffer.from(JSON.stringify(votes));
+
+            const encryptedVote = await eccrypto.encrypt(publicKey, payload);
+
+            return Buffer.concat([
+                encryptedVote.iv,
+                encryptedVote.ephemPublicKey,
+                encryptedVote.ciphertext,
+                encryptedVote.mac,
+            ]);
+        } catch (err) {
+            console.error('Error encrypting vote:', err);
+        }
+    }
+
+
     const submitVoteHandler = async(e) => {
         e.preventDefault();
 
         setLoading(true);
 
         try {
-            
-        } catch (err) {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                navigate('/');
+                return;
+            }
 
+            const payload = await encryptVote(token);
+
+            const res = await fetch(
+                `/api/elections/${electionId}/vote`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ vote: payload.toString('hex') })
+                }
+            );
+
+            const data = await res.json();
+
+            window.alert(data.message);
+
+            if (res.ok) {
+                navigate(`/student/elections/${electionId}/candidates`);
+                return;
+            }
+        } catch (err) {
+            console.error('Error:', err);
         } finally {
             setLoading(false);
         }

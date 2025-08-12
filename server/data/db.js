@@ -56,6 +56,19 @@ db.exec(`
     FOREIGN KEY (election_id) REFERENCES elections(id)
   );
 
+  CREATE TABLE IF NOT EXISTS votes (
+    uuid TEXT PRIMARY KEY,
+    encrypted_vote TEXT NOT NULL,
+    election_id TEXT NOT NULL,
+    FOREIGN KEY (election_id) REFERENCES elections(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS vote_transactions (
+    uuid TEXT PRIMARY KEY,
+    tx_hash TEXT NOT NULL,
+    timestamp INTEGER NOT NULL
+  );
+
   CREATE TABLE IF NOT EXISTS auth_codes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     student_id TEXT NOT NULL,

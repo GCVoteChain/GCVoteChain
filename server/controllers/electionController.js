@@ -1,6 +1,10 @@
 const { keccak256, solidityPacked } = require('ethers');
 const electionModel = require('../models/electionModel.js');
 const candidateModel = require('../models/candidateModel.js');
+const voteModel = require('../models/voteModel.js');
+
+const { v4: uuid } = require('uuid');
+
 // const { loadContracts } = require('../services/contract.js');
 
 
@@ -129,6 +133,23 @@ async function results(req, res) {
 }
 
 
+async function vote(req, res) {
+    try {
+        const { vote } = req.body;
+        const { electionId } = req.params;
+        
+        const UUID = uuid();
+
+        voteModel.addVote(UUID, vote, electionId);
+
+        res.send({ message: 'Vote submitted' });
+    } catch (err) {
+        console.error('Error submitting vote:', err);
+        res.status(500).send({ message: 'Failed to submit vote' });
+    }
+}
+
+
 module.exports = {
     add,
     setSchedule,
@@ -136,5 +157,6 @@ module.exports = {
     remove,
     getAll,
     get,
-    results
+    results,
+    vote
 }
