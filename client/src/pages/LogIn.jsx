@@ -12,18 +12,28 @@ function Login (){
     const [pass, setPass] = useState ('');
     const [loginStatus, setLoginStatus] = useState('');
 
+    const [codeInput, setCodeInput] = useState('');
+    
+    const [loading, setLoading] = useState(false);
+    const [showCodeInputModal, setShowCodeInputModal] = useState(false);
+
     const isFormValid = user.trim() !== '' && pass.trim() !== '';
 
     const handleLogin = async(e) => {
         e.preventDefault();
 
+        setLoading(true);
+
         if (isFormValid) {
+            let reqBody = { studentId: user, password: pass };
+            if (codeInput) reqBody['code'] = codeInput;
+
             const res = await fetch(
                 '/api/auth/login',
                 {
                     method:'POST',
                     headers:{'Content-Type': 'application/json' },
-                    body: JSON.stringify({ studentId: user , password: pass})
+                    body: JSON.stringify(reqBody)
                 }
             );
 
@@ -32,6 +42,12 @@ function Login (){
             setLoginStatus(data.message);
 
             if (res.ok) {
+                if (res.status === 202) {
+                    setShowCodeInputModal(true);
+                    setLoading(false);
+                    return;
+                }
+
                 localStorage.setItem('authToken', data.token);
 
                 const decoded = jwtDecode(data.token);
@@ -41,6 +57,8 @@ function Login (){
                 else setLoginStatus('Something went wrong. Try again later.');
             }
         }
+
+        setLoading(false);
     }
 
     return(
@@ -61,6 +79,28 @@ function Login (){
                 <p id="login-form-login-status" style={{ textAlign: 'center', marginTop: '25px', color: 'black' }}>
                     {loginStatus}
                 </p>
+
+                {showCodeInputModal && (
+                    <div className='code-modal'>
+                        <div className='code-modal-form'>
+                            <label>
+                                <input
+                                    type='text'
+                                    value={codeInput || ''}
+                                    onChange={(e) => setCodeInput(e.target.value)}
+                                    required
+                                    disabled={loading}
+                                />
+                            </label>
+                            <button
+                                type='submit'
+                                disabled={codeInput.length < 8}
+                            >
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     )

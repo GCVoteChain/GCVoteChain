@@ -28,4 +28,12 @@ router.put('/update-password', authenticateToken, authenticateRole('voter', 'adm
 router.post('/login', authController.login);
 
 
+// 2FA toggle route
+router.put('/2fa', authenticateToken, authenticateRole('voter', 'admin'), authController.toggle2FA);
+
+
+// Get 2FA state route
+router.get('/2fa/:studentId', authenticateToken, authenticateRole('voter', 'admin'), authController.get2FAState);
+
+
 module.exports = router;
