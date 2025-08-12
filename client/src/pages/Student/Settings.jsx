@@ -104,15 +104,6 @@ function Settings(){
                     <button
                         type='button'
                         onClick={() => {
-
-                        }}
-                        disabled={loading}
-                    >
-                        Change password
-                    </button>
-                    <button
-                        type='button'
-                        onClick={() => {
                             const confirmed = window.confirm('Are you sure you want to log out?');
                             if (confirmed) {
                                 localStorage.removeItem('authToken');
