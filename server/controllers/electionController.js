@@ -37,6 +37,11 @@ async function setSchedule(req, res) {
         if (start >= end) return res.status(400).send({ message: 'Start time must be before the end time' });
         if (start < now) return res.status(400).send({ message: 'Start time must be in the future' });
 
+        const election = electionModel.getById(id);
+        if (election.status === 'open' || election.status === 'closed') {
+            return res.status(400).send({ message: 'Cannot reset the schedule for an election that is open or closed '});
+        }
+        
         // const contracts = await loadContracts();
 
         // const tx = await contracts.electionManager.setElectionSchedule(id, start, end);
