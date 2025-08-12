@@ -34,7 +34,7 @@ db.exec(`
     position TEXT NOT NULL,
     name TEXT NOT NULL,
     election_id TEXT NOT NULL,
-    voteCount INTEGER NOT NULL DEFAULT 0,
+    vote_count INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (id, student_id, election_id),
     FOREIGN KEY (student_id) REFERENCES users(student_id),
     FOREIGN KEY (election_id) REFERENCES elections(id)

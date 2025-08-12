@@ -29,4 +29,8 @@ router.put('/set-status', authenticateToken, authenticateRole('admin'), election
 router.delete('/remove', authenticateToken, authenticateRole('admin'), electionController.remove);
 
 
+// Get election results route
+// router.get('/:electionId/results', authenticateToken, authenticateRole('voter', 'admin'), electionController.getResults);
+
+
 module.exports = router;

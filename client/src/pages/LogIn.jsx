@@ -38,20 +38,20 @@ function Login (){
             );
 
             const data = await res.json();
-            
-            setLoginStatus(data.message);
 
+            setLoginStatus(data.message);
+            
             if (res.ok) {
                 if (res.status === 202) {
                     setShowCodeInputModal(true);
                     setLoading(false);
                     return;
                 }
-
+                
                 localStorage.setItem('authToken', data.token);
-
+                
                 const decoded = jwtDecode(data.token);
-
+                
                 if (decoded.role === 'admin') navigate('/admin');
                 else if (decoded.role === 'voter') navigate('/student');
                 else setLoginStatus('Something went wrong. Try again later.');
@@ -76,28 +76,40 @@ function Login (){
                     </div>
                     <div className="login-form-submit"><button type="submit" disabled={!isFormValid}>Login</button></div>
                 </form>
-                <p id="login-form-login-status" style={{ textAlign: 'center', marginTop: '25px', color: 'black' }}>
-                    {loginStatus}
-                </p>
+                {!showCodeInputModal && (
+                    <p id="login-form-login-status" style={{ textAlign: 'center', marginTop: '25px', color: 'black' }}>
+                        {loginStatus}
+                    </p>
+                )}
 
                 {showCodeInputModal && (
                     <div className='code-modal'>
                         <div className='code-modal-form'>
-                            <label>
-                                <input
-                                    type='text'
-                                    value={codeInput || ''}
-                                    onChange={(e) => setCodeInput(e.target.value)}
-                                    required
-                                    disabled={loading}
-                                />
-                            </label>
-                            <button
-                                type='submit'
-                                disabled={codeInput.length < 8}
-                            >
-                                Submit
-                            </button>
+                            <form onSubmit={handleLogin}>
+                                <p>{loginStatus}</p>
+                                <div className='code-modal-form-input-box'>
+                                    <input
+                                        type='text'
+                                        value={codeInput || ''}
+                                        placeholder='Code'
+                                        onChange={(e) => {
+                                            const raw = e.target.value;
+                                            const sanitized = raw.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8);
+                                            setCodeInput(sanitized);
+                                        }}
+                                        required
+                                        disabled={loading}
+                                    />
+                                </div>
+                                <div className='code-modal-form-submit'>
+                                    <button
+                                        type='submit'
+                                        disabled={codeInput.length < 8 || loading}
+                                    >
+                                        Submit
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 )}

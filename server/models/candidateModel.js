@@ -2,7 +2,7 @@ const db = require('../data/db');
 const { promisify } = require('util');
 
 const insertCandidateStmt = db.prepare(`
-    INSERT INTO candidates (id, student_id, election_id, name, position, voteCount)
+    INSERT INTO candidates (id, student_id, election_id, name, position, vote_count)
     VALUES (?, ?, ?, ?, ?, ?)
 `);
 
@@ -18,9 +18,9 @@ const removeCandidateStmt = db.prepare(`
 `);
 
 const getAllCandidatesStmt = db.prepare(`
-    SELECT student_id, position, name FROM candidates
+    SELECT student_id, position, name, vote_count FROM candidates
     WHERE election_id = ?
-`)
+`);
 
 
 const insertAsync = promisify(insertCandidateStmt.run.bind(insertCandidateStmt));
