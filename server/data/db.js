@@ -1,6 +1,5 @@
 const path = require('path');
 const fs = require('fs');
-const cron = require('node-cron');
 const crypto = require('crypto');
 // const { loadContracts } = require('../services/contract');
 
@@ -79,46 +78,6 @@ db.exec(`
     FOREIGN KEY (student_id) REFERENCES users(student_id)
   );
 `);
-
-
-cron.schedule('*/5 * * * * *', () => {
-  const now = Math.floor(Date.now() / 1000);
-
-  // Open elections
-  const scheduledElections = db.prepare(`
-    SELECT id FROM elections
-    WHERE status = 'scheduled' AND start_time <= ? AND end_time > ?
-  `).all(now, now);
-
-  for (const { id } of scheduledElections) {
-    try {
-      // const tx = await contracts.electionManager.startElection(id);
-      // await tx.wait();
-
-      db.prepare(`UPDATE elections SET status = 'open' WHERE id = ?`).run(id);
-    } catch (error) {
-      console.error(`Failed to start election ${id}:`, error);
-    }
-  }
-
-  
-  // Close elections
-  const openElections = db.prepare(`
-    SELECT id FROM elections
-    WHERE status = 'open' AND end_time <= ?
-  `).all(now);
-
-  for (const { id } of openElections) {
-    try {
-      // const txStop = await contracts.electionManager.stopElection(id);
-      // await txStop.wait();
-
-      db.prepare(`UPDATE elections SET status = 'closed' WHERE id = ?`).run(id);
-    } catch (error) {
-      console.error(`Failed to end election ${id}:`, error);
-    }
-  }
-});
 
 
 module.exports = db;

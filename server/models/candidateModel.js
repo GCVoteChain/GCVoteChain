@@ -21,6 +21,12 @@ const getAllCandidatesStmt = db.prepare(`
     WHERE election_id = ?
 `);
 
+const incrementVoteStmt = db.prepare(`
+    UPDATE candidates
+    set vote_count = vote_count + 1
+    WHERE election_id = ? AND student_id = ? AND position = ?
+`);
+
 const getVotesStmt = db.prepare(`
     SELECT student_id, position, name, vote_count FROM candidates
     WHERE election_id = ?
@@ -48,6 +54,11 @@ function getAllCandidates(electionId) {
 }
 
 
+function incrementVote(electionId, studentId, position) {
+    return incrementVoteStmt.run(electionId, studentId, position);
+}
+
+
 function getVotes(electionId) {
     return getVotesStmt.all(electionId) || [];
 }
@@ -58,5 +69,6 @@ module.exports = {
     updateCandidate,
     removeCandidate,
     getAllCandidates,
+    incrementVote,
     getVotes
 };
