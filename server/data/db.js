@@ -32,6 +32,7 @@ db.exec(`
     name TEXT NOT NULL,
     email TEXT NOT NULL,
     role TEXT NOT NULL CHECK (role IN ('voter', 'admin')),
+    voted BOOLEAN DEFAULT FALSE,
     enabled_2fa BOOLEAN DEFAULT FALSE
   );
   

@@ -3,6 +3,8 @@ const electionModel = require('../models/electionModel.js');
 const candidateModel = require('../models/candidateModel.js');
 const voteModel = require('../models/voteModel.js');
 
+const userModel = require('../models/userModel.js');
+
 const { v4: uuid } = require('uuid');
 
 // const { loadContracts } = require('../services/contract.js');
@@ -135,14 +137,20 @@ async function results(req, res) {
 
 async function vote(req, res) {
     try {
-        const { vote } = req.body;
+        const { studentId, vote } = req.body;
         const { electionId } = req.params;
+
+        const election = electionModel.getById(electionId);
+        if (election?.status !== 'open') return res.status(400).send({ message: 'This election has already ended' });
+
+        const hasVoted = userModel.hasVoted(studentId);
+        if (hasVoted) return res.status(400).send({ message: 'You already voted for this election' });
         
         const UUID = uuid();
 
         voteModel.addVote(UUID, vote, electionId);
 
-        res.send({ message: 'Vote submitted' });
+        res.send({ uuid: UUID, message: 'Vote submitted' });
     } catch (err) {
         console.error('Error submitting vote:', err);
         res.status(500).send({ message: 'Failed to submit vote' });

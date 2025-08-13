@@ -1,5 +1,4 @@
 const db = require('../data/db')
-const { promisify } = require('util');
 
 const addElectionStmt = db.prepare(`
     INSERT INTO elections (id, title)

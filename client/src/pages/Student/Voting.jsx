@@ -5,6 +5,7 @@ import useAuth from "../../hooks/auth";
 import { useEffect,useMemo,useRef,useState } from "react";
 
 import eccrypto from 'eccrypto';
+import { jwtDecode } from 'jwt-decode';
 
 
 function Voting() {
@@ -154,8 +155,10 @@ function Voting() {
                 return;
             }
 
-            const payload = await encryptVote(token);
+            const decoded = jwtDecode(token);
 
+            const payload = await encryptVote(token);
+            
             const res = await fetch(
                 `/api/elections/${electionId}/vote`,
                 {
@@ -164,17 +167,27 @@ function Voting() {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ vote: payload.toString('hex') })
+                    body: JSON.stringify({
+                        studentId: decoded.student_id,
+                        vote: payload.toString('hex')
+                    })
                 }
             );
 
             const data = await res.json();
 
-            window.alert(data.message);
-
             if (res.ok) {
-                navigate(`/student/elections/${electionId}/candidates`);
+                const msg = `${data.message}\n\nYour confirmation code (UUID) is:\n${data.uuid}\n\nDo you want to copy it to your clipboard now?`;
+                if (window.confirm(msg)) {
+                    navigator.clipboard.writeText(data.uuid).then(() => {
+                        alert('Confirmation code copied to clipboard');
+                    });
+                }
+                
+                navigate(`/student/elections`);
                 return;
+            } else {
+                window.alert(data.message);
             }
         } catch (err) {
             console.error('Error:', err);
