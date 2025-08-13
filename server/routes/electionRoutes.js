@@ -37,4 +37,8 @@ router.get('/:electionId/results', authenticateToken, authenticateRole('voter', 
 router.post('/:electionId/vote', authenticateToken, authenticateRole('voter'), electionController.vote);
 
 
+// Vote confirmation route
+router.get('/vote-confirmation/:uuid', authenticateToken, authenticateRole('voter'), electionController.voteExists);
+
+
 module.exports = router;

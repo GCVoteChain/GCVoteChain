@@ -34,8 +34,8 @@ const voteStmt = db.prepare(`
 `);
 
 const hasVotedStmt = db.prepare(`
-    SELECT voted FROM users
-    WHERE student_id = ?
+    SELECT * FROM users
+    WHERE student_id = ? AND voted = TRUE
 `);
 
 
@@ -70,7 +70,7 @@ function vote(studentId) {
 
 
 function hasVoted(studentId) {
-    return hasVotedStmt.run(studentId);
+    return hasVotedStmt.get(studentId);
 }
 
 

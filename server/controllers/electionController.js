@@ -5,7 +5,7 @@ const voteModel = require('../models/voteModel.js');
 
 const userModel = require('../models/userModel.js');
 
-const { v4: uuid } = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 
 // const { loadContracts } = require('../services/contract.js');
 
@@ -145,8 +145,10 @@ async function vote(req, res) {
 
         const hasVoted = userModel.hasVoted(studentId);
         if (hasVoted) return res.status(400).send({ message: 'You already voted for this election' });
+
+        userModel.vote(studentId);
         
-        const UUID = uuid();
+        const UUID = uuidv4();
 
         voteModel.addVote(UUID, vote, electionId);
 
@@ -154,6 +156,21 @@ async function vote(req, res) {
     } catch (err) {
         console.error('Error submitting vote:', err);
         res.status(500).send({ message: 'Failed to submit vote' });
+    }
+}
+
+
+async function voteExists(req, res) {
+    try {
+        const { uuid } = req.params;
+
+        const exists = voteModel.voteExists(uuid);
+        if (!exists) return res.status(400).send({ message: 'UUID is invalid or does not exists' });
+
+        res.send({ message: 'UUID confirmed! Your vote is recorded' });
+    } catch (err) {
+        console.error('Error confirming vote existence:', err);
+        res.status(500).send({ message: 'Failed to confirm vote existence' });
     }
 }
 
@@ -166,5 +183,6 @@ module.exports = {
     getAll,
     get,
     results,
-    vote
+    vote,
+    voteExists,
 }

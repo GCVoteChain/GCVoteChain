@@ -64,9 +64,28 @@ function Election() {
         setLoading(true);
 
         try {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                navigate('/');
+                return;
+            }
 
+            console.log('asd');
+            const res = await fetch(
+                `/api/elections/vote-confirmation/${UUID}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            const data = await res.json();
+
+            window.alert(data.message);
         } catch (err) {
-
+            console.error('Error:', err);
         } finally {
             setLoading(false);
         }
