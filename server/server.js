@@ -11,7 +11,7 @@ const PORT = 8008;
 
 const envPath = path.join(__dirname, '.env');
 if (!fs.existsSync(envPath)) {
-  fs.writeFileSync(envPath, `PORT=${PORT}\nJWT_TOKEN=${crypto.randomBytes(64).toString('hex')}`);
+  fs.writeFileSync(envPath, `PORT=${PORT}\nJWT_TOKEN=${crypto.randomBytes(64).toString('hex')}\n`);
 } else {
   const envFile = fs.readFileSync(envPath, 'utf8');
 
