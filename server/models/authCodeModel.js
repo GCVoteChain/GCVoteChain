@@ -16,7 +16,8 @@ const isCodeValidStmt = db.prepare(`
 `);
 
 const useCodeStmt = db.prepare(`
-    UPDATE used FROM auth_codes
+    UPDATE auth_codes
+    set used = TRUE
     WHERE student_id = ? AND code = ?
 `);
 
