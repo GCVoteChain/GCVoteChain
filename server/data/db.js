@@ -3,7 +3,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 // const { loadContracts } = require('../services/contract');
 
-const db = require('better-sqlite3-multiple-ciphers')('./data/database.db');
+const db = require('better-sqlite3-multiple-ciphers')(path.resolve(__dirname, './database.db'));
 
 
 const envPath = path.join(__dirname, '.env');
