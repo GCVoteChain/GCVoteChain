@@ -15,6 +15,11 @@ const isCodeValidStmt = db.prepare(`
     WHERE student_id = ? AND code = ? AND expires_at > ?
 `);
 
+const useCodeStmt = db.prepare(`
+    UPDATE used FROM auth_codes
+    WHERE student_id = ? AND code = ?
+`);
+
 
 function addCode(studentId, code, expiresAt) {
     return addCodeStmt.run(studentId, code, expiresAt);
@@ -31,8 +36,14 @@ function isCodeValid(studentId, code, currentTime) {
 }
 
 
+function useCode(studentId, code) {
+    return useCodeStmt.run(studentId, code);
+}
+
+
 module.exports = {
     addCode,
     isCodeSent,
-    isCodeValid
+    isCodeValid,
+    useCode,
 };

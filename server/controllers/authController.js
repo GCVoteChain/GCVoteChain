@@ -95,6 +95,8 @@ async function login(req, res) {
             const validCode = codeModel.isCodeValid(studentId, code, currentTime);
             if (!validCode) {
                 return res.status(401).send({ message: 'Incorrect code. Try again.' });
+            } else {
+                codeModel.useCode(studentId, code);
             }
         }
         
