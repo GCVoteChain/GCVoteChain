@@ -1,3 +1,5 @@
+require('dotenv').config({ path: '../.env' });
+
 const bcrypt = require('bcryptjs');
 const { keccak256, solidityPacked } = require('ethers');
 const userModel = require('../models/userModel');
@@ -6,9 +8,14 @@ const electionModel = require('../models/electionModel');
 const candidateModel = require('../models/candidateModel');
 
 const db = require('../data/db');
+const { loadContracts } = require('../services/contract');
+
+const electionId = keccak256(solidityPacked(['string'], ['demo_election']));
 
 
 async function createUsers() {
+    const contracts = await loadContracts();
+    
     for (let i = 0; i < 100; i++ ) {
         try {
             const userId = `user${i + 1}`;
@@ -19,6 +26,8 @@ async function createUsers() {
             const hashedPassword = await bcrypt.hash('user123', 6);
             const voterId = keccak256(solidityPacked(['string', 'string'], [userId, 'voter']));
 
+            await contracts.voterManager.registerVoter(voterId);
+
             userModel.registerUser(voterId, userId, hashedPassword, userId, '', 'voter');
         } catch (err) {
             console.log('Failed to create user:', err);
@@ -28,8 +37,13 @@ async function createUsers() {
 
 async function createElection() {
     try {
-        if (electionModel.getById('demo_election')) return;
-        electionModel.addElection('demo_election', 'demo');
+        if (electionModel.getById(electionId)) return;
+
+        const contracts = await loadContracts();
+
+        await contracts.electionManager.createElection(electionId);
+        
+        electionModel.addElection(electionId, 'demo');
     } catch (err) {
         console.log('Failed to create election:', err);
     }
@@ -60,7 +74,7 @@ async function createCandidates() {
                 candidateModel.addCandidate(
                     `candidate${id}`,
                     `user${id}`,
-                    'demo_election',
+                    electionId,
                     `Candidate ${id}`,
                     position
                 );

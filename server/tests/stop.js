@@ -1,9 +1,16 @@
-const db = require('../data/db');
+require('dotenv').config({ path: '../.env' });
 
-const electionModel = require('../models/electionModel');
+const { loadContracts } = require('../services/contract');
 
-db.prepare(`
-    UPDATE elections
-    SET end_time = ?
-    WHERE id = 'demo_election'
-`).run(Math.floor(Date.now() / 1000));
+(async () => {
+    const electionId = keccak256(solidityPacked(['string'], ['demo_election']));
+
+    const contracts = await loadContracts();
+
+    await contracts.electionManager.startElection(electionId);
+    db.prepare(`
+        UPDATE elections
+        SET end_time = ?
+        WHERE id = ?
+    `).run(Math.floor(Date.now() / 1000), electionId);
+})();
