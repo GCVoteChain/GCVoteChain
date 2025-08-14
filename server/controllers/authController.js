@@ -87,8 +87,7 @@ async function login(req, res) {
                 }
 
                 return res.status(202).send({
-                    status: '2fa_required',
-                    message: '2FA is enabled. Please enter the code sent to your email.'
+                    message: 'Please enter the code sent to your email.'
                 });
             }
 
@@ -116,10 +115,70 @@ async function login(req, res) {
 
 async function updatePassword(req, res) {
     try {
-        const { studentId, password } = req.body;
+        const { studentId, oldPassword, newPassword, code } = req.body;
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = userModel.getUser(studentId);
+        if (!user) throw new Error(`ID (${studentId}) not found\n`);
 
+        console.log(user.enabled_2fa);
+
+        if (user.enabled_2fa) {
+            const currentTime = Math.floor(Date.now() / 1000);
+
+            if (!code) {
+                const isCodeSent = codeModel.isCodeSent(studentId, currentTime);
+                if (!isCodeSent) {
+                    const generatedCode = await generateCode(studentId);
+
+                    const mailOptions = {
+                        from: `<${process.env.NODEMAILER_EMAIL}>`,
+                        to: `${user.email}`,
+                        subject: 'Your 2FA Verification Code',
+                        text: `
+                        \rHello ${user.name},
+
+                        \rYour 2FA verification code is ${generatedCode}.
+
+                        \rThis code will expire in 5 minutes.
+
+                        \rIf you did not request this, please ignore this email.`
+                    };
+                    
+                    transporter.sendMail(mailOptions, (error, info) => {
+                        if (error) return console.error('Error sending email:', error);
+                        console.log('Email sent successfully:', info.response);
+                    })
+                }
+
+                return res.status(202).send({
+                    message: 'Please enter the code sent to your email.'
+                });
+            }
+
+            const validCode = codeModel.isCodeValid(studentId, code, currentTime);
+            if (!validCode) {
+                return res.status(401).send({
+                    status: 'incorrect_code',
+                    message: 'Incorrect code. Try again.'
+                });
+            } else {
+                codeModel.useCode(studentId, code);
+            }
+        }
+
+        const match = await bcrypt.compare(oldPassword, user.password);
+        if (!match) {
+            return res.status(401).send({
+                status: 'incorrect_password',
+                message: 'Incorrect password'
+            });
+        }
+
+        if (oldPassword === newPassword) {
+            return res.status(400).send({ message: 'New password must be different from the old password' });
+        }
+        
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
         userModel.updatePassword(studentId, hashedPassword);
 
         res.send({ message: 'Password changed successfully' });
@@ -146,13 +205,56 @@ async function get2FAState(req, res) {
 
 async function toggle2FA(req, res) {
     try {
-        const { studentId } = req.body;
+        const { studentId, code } = req.body;
 
-        const state = userModel.get2FAState(studentId);
+        const user = userModel.getUser(studentId);
+        if (!user) throw new Error(`ID (${studentId}) not found\n`);
         
-        userModel.toggle2FA(studentId, !state.enabled_2fa);
+        const currentTime = Math.floor(Date.now() / 1000);
 
-        res.send({ message: `2FA is ${(!state.enabled_2fa ? 'enabled' : 'disabled')}.`});
+        if (!code) {
+            const isCodeSent = codeModel.isCodeSent(studentId, currentTime);
+            if (!isCodeSent) {
+                const generatedCode = await generateCode(studentId);
+
+                const mailOptions = {
+                    from: `<${process.env.NODEMAILER_EMAIL}>`,
+                    to: `${user.email}`,
+                    subject: 'Your 2FA Verification Code',
+                    text: `
+                    \rHello ${user.name},
+
+                    \rYour 2FA verification code is ${generatedCode}.
+
+                    \rThis code will expire in 5 minutes.
+
+                    \rIf you did not request this, please ignore this email.`
+                };
+                
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) return console.error('Error sending email:', error);
+                    console.log('Email sent successfully:', info.response);
+                })
+            }
+
+            return res.status(202).send({
+                message: 'Please enter the code sent to your email.'
+            });
+        }
+
+        const validCode = codeModel.isCodeValid(studentId, code, currentTime);
+        if (!validCode) {
+            return res.status(401).send({ message: 'Incorrect code. Try again.' });
+        } else {
+            codeModel.useCode(studentId, code);
+        }
+
+        userModel.toggle2FA(studentId, !user.enabled_2fa);
+
+        res.send({
+            state: !user.enabled_2fa,
+            message: `2FA is ${(!user.enabled_2fa ? 'enabled' : 'disabled')} successfully.`
+        });
     } catch (err) {
         console.error('Error updating 2FA state:', err);
         res.status(500).send({ message: 'Failed to updating 2FA state' });
