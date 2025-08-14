@@ -88,4 +88,17 @@ async function loadContracts() {
 }
 
 
-module.exports = { loadContracts };
+function getRevertError(err) {
+    return (
+        err.reason ||
+        err.reason?.message ||
+        err.message ||
+        JSON.stringify(err)
+    );
+}
+
+
+module.exports = {
+    loadContracts,
+    getRevertError
+};

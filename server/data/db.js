@@ -31,7 +31,6 @@ db.exec(`
     name TEXT NOT NULL,
     email TEXT NOT NULL,
     role TEXT NOT NULL CHECK (role IN ('voter', 'admin')),
-    voted BOOLEAN DEFAULT FALSE,
     enabled_2fa BOOLEAN DEFAULT FALSE
   );
   
@@ -53,13 +52,6 @@ db.exec(`
     PRIMARY KEY (id),
     UNIQUE (student_id, election_id),
     FOREIGN KEY (student_id) REFERENCES users(student_id),
-    FOREIGN KEY (election_id) REFERENCES elections(id)
-  );
-
-  CREATE TABLE IF NOT EXISTS votes (
-    uuid TEXT PRIMARY KEY,
-    encrypted_vote TEXT NOT NULL,
-    election_id TEXT NOT NULL,
     FOREIGN KEY (election_id) REFERENCES elections(id)
   );
 

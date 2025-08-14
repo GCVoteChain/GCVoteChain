@@ -6,8 +6,9 @@ const eccrypto = require('eccrypto');
 
 const db = require('../data/db');
 const candidateModel = require('../models/candidateModel');
+const electionModel = require('../models/electionModel');
 
-
+const { loadContracts } = require('../services/contract.js');
 
 function splitBuffer(buffer) {
   return {
@@ -22,6 +23,8 @@ function splitBuffer(buffer) {
 cron.schedule('*/5 * * * * *', async () => {
   const now = Math.floor(Date.now() / 1000);
 
+  const contracts = await loadContracts();
+
   // Open elections
   const scheduledElections = db.prepare(`
     SELECT id FROM elections
@@ -30,10 +33,10 @@ cron.schedule('*/5 * * * * *', async () => {
 
   for (const { id } of scheduledElections) {
     try {
-      // const tx = await contracts.electionManager.startElection(id);
-      // await tx.wait();
-
-      db.prepare(`UPDATE elections SET status = 'open' WHERE id = ?`).run(id);
+      const tx = await contracts.electionManager.startElection(id);
+      await tx.wait();
+      
+      electionModel.setElectionStatus(id, 'open');
     } catch (error) {
       console.error(`Failed to start election ${id}:`, error);
     }
@@ -48,18 +51,17 @@ cron.schedule('*/5 * * * * *', async () => {
 
   for (const { id } of openElections) {
     try {
-      // const txStop = await contracts.electionManager.stopElection(id);
-      // await txStop.wait();
+      const txStop = await contracts.electionManager.stopElection(id);
+      await txStop.wait();
 
-      db.prepare(`UPDATE elections SET status = 'closed' WHERE id = ?`).run(id);
+      electionModel.setElectionStatus(id, 'closed');
 
-      const rows = db.prepare(`
-        SELECT encrypted_vote FROM votes
-        WHERE election_id = ?
-      `).all(id);
+      const encryptedVotes = await contracts.electionManager.getEncryptedVotes(id);
 
-      for (const row of rows) {
-        const buffer = splitBuffer(Buffer.from(row.encrypted_vote, 'hex'));
+      for (const encrypted of encryptedVotes) {
+        const hexStr = encrypted.startsWith('0x') ? encrypted.slice(2) : encrypted;
+        
+        const buffer = splitBuffer(Buffer.from(hexStr, 'hex'));
         const privateKey = Buffer.from(process.env.CRYPTO_PRIVATE_KEY, 'hex');
         const decrypted = await eccrypto.decrypt(privateKey, buffer);
 

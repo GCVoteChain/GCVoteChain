@@ -5,7 +5,7 @@ const codeModel = require('../models/authCodeModel.js');
 
 const jwt = require('jsonwebtoken');
 
-// const { loadContracts } = require('../services/contract.js');
+const { loadContracts, getRevertError } = require('../services/contract.js');
 
 const nodemailer = require('nodemailer');
 
@@ -31,17 +31,23 @@ async function register(req, res) {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const voterId = keccak256(solidityPacked(['string', 'string', 'string'], [studentId, email, role]));
+    
+        const contracts = await loadContracts();
 
-        // const contracts = await loadContracts();
+        try {
+            await contracts.voterManager.registerVoter.staticCall(voterId);
+        } catch (err) {
+            return res.status(400).send({ message: `Failed to register user: ${getRevertError(err)}`})
+        }
 
-        // const tx = await contracts.voterManager.registerVoter(voterId);
-        // await tx.wait();
+        const tx = await contracts.voterManager.registerVoter(voterId);
+        await tx.wait();
 
         userModel.registerUser(voterId, studentId, hashedPassword, name, email, role);
         res.send({ message: 'Registered successfully'});
     } catch (err) {
         console.error('Error registering:', err);
-        res.status(500).send({ message: 'Failed to register user' });
+        res.status(500).send({ message: `Failed to register user: ${getRevertError(err)}` });
     }
 }
 

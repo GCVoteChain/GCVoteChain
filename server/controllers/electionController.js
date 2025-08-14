@@ -1,13 +1,22 @@
 const { keccak256, solidityPacked } = require('ethers');
 const electionModel = require('../models/electionModel.js');
 const candidateModel = require('../models/candidateModel.js');
-const voteModel = require('../models/voteModel.js');
-
+const transactionModel = require('../models/transactionModel.js');
 const userModel = require('../models/userModel.js');
+
+const ethers = require('ethers');
 
 const { v4: uuidv4 } = require('uuid');
 
-// const { loadContracts } = require('../services/contract.js');
+const { loadContracts, getRevertError } = require('../services/contract.js');
+
+const path = require('path');
+
+const keysPath = path.resolve(__dirname, '../../blockchain/smart_contracts/scripts/keys');
+const { quorum } = require(keysPath);
+
+const host = quorum?.rpcnode?.url;
+const provider = new ethers.JsonRpcProvider(host);
 
 
 async function add(req, res) {
@@ -16,10 +25,16 @@ async function add(req, res) {
         const timestamp = Math.floor(Date.now() / 1000);
         const id = keccak256(solidityPacked(['string', 'uint256'], [title, timestamp]));
 
-        // const contracts = await loadContracts();
+        const contracts = await loadContracts();
 
-        // const tx = await contracts.electionManager.createElection(id, title);
-        // await tx.wait();
+        try {
+            await contracts.electionManager.createElection.staticCall(id);
+        } catch (err) {
+            return res.status(400).send({ message: `Failed to create election: ${getRevertError(err)}`});
+        }
+
+        const tx = await contracts.electionManager.createElection(id);
+        await tx.wait();
 
         electionModel.addElection(id, title);
 
@@ -47,11 +62,6 @@ async function setSchedule(req, res) {
         if (election.status === 'open' || election.status === 'closed') {
             return res.status(400).send({ message: 'Cannot reset the schedule for an election that is open or closed '});
         }
-        
-        // const contracts = await loadContracts();
-
-        // const tx = await contracts.electionManager.setElectionSchedule(id, start, end);
-        // await tx.wait();
 
         electionModel.setElectionSchedule(id, start, end);
 
@@ -125,7 +135,6 @@ async function results(req, res) {
         const { electionId } = req.params;
 
         const results = candidateModel.getVotes(electionId);
-        console.log(results);
 
         res.send(results);
     } catch (err) {
@@ -143,19 +152,23 @@ async function vote(req, res) {
         const election = electionModel.getById(electionId);
         if (election?.status !== 'open') return res.status(400).send({ message: 'This election has already ended' });
 
-        const hasVoted = userModel.hasVoted(studentId);
+        const user = userModel.getUser(studentId);
+        if (!user) return res.status(400).send({ message: `Invalid ID: ${studentId}`});
+
+        const contracts = await loadContracts();
+        const hasVoted = await contracts.electionManager.hasVoted(electionId, user.voter_id);
         if (hasVoted) return res.status(400).send({ message: 'You already voted for this election' });
 
-        userModel.vote(studentId);
-        
-        const UUID = uuidv4();
+        const tx = await contracts.electionManager.vote(electionId, user.voter_id, ('0x' + vote));
+        await tx.wait();
 
-        voteModel.addVote(UUID, vote, electionId);
+        const uuid = uuidv4();
+        transactionModel.addTransaction(uuid, tx.hash, Math.floor(Date.now() / 1000));
 
-        res.send({ uuid: UUID, message: 'Vote submitted' });
+        res.send({ uuid: uuid, message: 'Vote submitted' });
     } catch (err) {
         console.error('Error submitting vote:', err);
-        res.status(500).send({ message: 'Failed to submit vote' });
+        res.status(500).send({ message: `Failed to submit vote: ${getRevertError(err)}` });
     }
 }
 
@@ -164,8 +177,11 @@ async function voteExists(req, res) {
     try {
         const { uuid } = req.params;
 
-        const exists = voteModel.voteExists(uuid);
-        if (!exists) return res.status(400).send({ message: 'UUID is invalid or does not exists' });
+        const transaction = transactionModel.getTransaction(uuid);
+        if (!transaction) return res.status(400).send({ message: 'UUID is invalid or does not exists' });
+
+        const tx = await provider.getTransaction(transaction.tx_hash);
+        if (!tx) throw new Error('Transaction not found');
 
         res.send({ message: 'UUID confirmed! Your vote is recorded' });
     } catch (err) {

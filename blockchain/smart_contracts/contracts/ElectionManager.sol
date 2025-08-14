@@ -34,7 +34,7 @@ contract ElectionManager {
     }
 
     modifier electionExists(bytes32 id) {
-        require(elections[id].exists);
+        require(elections[id].exists, 'This election does not exists');
         _;
     }
 
@@ -46,6 +46,8 @@ contract ElectionManager {
 
     
     function createElection(bytes32 id) external onlyAdmin {
+        require(!elections[id].exists, 'This election already exists');
+        
         Election storage e = elections[id];
         e.onGoing = false;
         e.hasEnded = false;
@@ -67,6 +69,11 @@ contract ElectionManager {
         elections[id].hasEnded = true;
     }
 
+    function hasVoted(bytes32 electionId, bytes32 voterId) external view electionExists(electionId) returns (bool) {
+        require(voterManager.isRegistered(voterId), 'Voter is not registered');
+        return elections[electionId].hasVoted[voterId];
+    }
+
     function vote(bytes32 electionId, bytes32 voterId, bytes calldata encryptedVote) external validateElection(electionId) {
         require(elections[electionId].onGoing, 'This election has already ended');
         require(!elections[electionId].hasVoted[voterId], 'Already voted');
@@ -76,7 +83,7 @@ contract ElectionManager {
         e.hasVoted[voterId] = true;
     }
 
-    function getEncryptedVotes(bytes32 electionId) external view returns (bytes[] memory) {
+    function getEncryptedVotes(bytes32 electionId) external view onlyAdmin returns (bytes[] memory) {
         require(!elections[electionId].onGoing, 'This election is still ongoing');
         return elections[electionId].encryptedVotes;
     }

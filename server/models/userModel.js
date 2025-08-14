@@ -27,17 +27,6 @@ const toggle2FAStateStmt = db.prepare(`
     WHERE student_id = ?
 `);
 
-const voteStmt = db.prepare(`
-    UPDATE users
-    SET voted = TRUE
-    WHERE student_id = ?
-`);
-
-const hasVotedStmt = db.prepare(`
-    SELECT * FROM users
-    WHERE student_id = ? AND voted = TRUE
-`);
-
 
 function registerUser(voterId, studentId, hashedPassword, name, email, role) {
     return registerUserStmt.run(voterId, studentId, hashedPassword, name, email, role);
@@ -64,22 +53,10 @@ function toggle2FA(studentId, newState) {
 }
 
 
-function vote(studentId) {
-    return voteStmt.run(studentId);
-}
-
-
-function hasVoted(studentId) {
-    return hasVotedStmt.get(studentId);
-}
-
-
 module.exports = {
     registerUser,
     getUser,
     updatePassword,
     get2FAState,
-    toggle2FA,
-    vote,
-    hasVoted
+    toggle2FA
 };
