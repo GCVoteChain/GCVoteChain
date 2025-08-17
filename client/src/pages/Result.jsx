@@ -121,7 +121,7 @@ function Result(){
 
         const role = jwtDecode(token).role;
         if (role === 'voter') navigate(`/student/elections/${electionId}/candidates`);
-        else if (role === 'admin') navigate(`/admin/eletiond/${electionId}/candidates`);
+        else if (role === 'admin') navigate(`/admin/elections/${electionId}/candidates`);
     }
     
 
