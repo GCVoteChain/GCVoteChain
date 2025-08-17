@@ -25,6 +25,9 @@ function Voting() {
     }, []);
 
 
+    const [confirmationCode, setConfirmationCode] = useState('');
+    const [showCopyPrompt, setShowCopyPrompt] = useState(false);
+
     const [selectedElection, setSelectedElection] = useState({});
     const [candidates, setCandidates] = useState({});
     
@@ -177,15 +180,9 @@ function Voting() {
             const data = await res.json();
 
             if (res.ok) {
-                const msg = `${data.message}\n\nYour confirmation code (UUID) is:\n${data.uuid}\n\nDo you want to copy it to your clipboard now?`;
-                if (window.confirm(msg)) {
-                    navigator.clipboard.writeText(data.uuid).then(() => {
-                        alert('Confirmation code copied to clipboard');
-                    });
-                }
-                
-                navigate(`/student/elections`);
-                return;
+                window.alert(data.message);
+                setShowCopyPrompt(true);
+                setConfirmationCode(data.uuid);
             } else {
                 window.alert(data.message);
             }
@@ -196,6 +193,49 @@ function Voting() {
         }
     }
 
+
+    const copyToClipboard = () => {
+        if (!confirmationCode) return;
+
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            navigator.clipboard.writeText(confirmationCode).then(() => {
+                alert('Confirmation code copied to clipboard');
+            }).catch(err => {
+                fallbackCopyToClipboard();
+            });
+        } else {
+            fallbackCopyToClipboard();
+        }
+
+        navigate('/student/elections');
+    }
+
+
+    const fallbackCopyToClipboard = () => {
+        const textarea = document.createElement('textarea');
+        textarea.value = confirmationCode;
+        textarea.style.position = 'fixed';
+        textarea.style.top = 0;
+        textarea.style.left = 0;
+
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+
+        try {
+            const success = document.execCommand('copy');
+            if (success) {
+                alert('Confirmation code copied to clipboard');
+            } else {
+                alert('Failed to copy code. Please copy manually');
+            }
+        } catch (err) {
+            alert('Copy not support on this browser');
+        }
+
+        document.body.removeChild(textarea);
+    }
+    
 
     const allVotesValid = !POSITIONS.every(position => votes[position] && votes[position].trim() !== '');
 
@@ -245,6 +285,20 @@ function Voting() {
                             </button>
                         </div>
                     </form>
+                    {showCopyPrompt && (
+                        <div className='confirmation-modal'>
+                            <div className='confirmation-modal-div'>
+                                <button className='confirmation-modal-div-close' onClick={() => {
+                                    setShowCopyPrompt(false);
+                                    navigate('/student/elections');
+                                }}>×</button>
+                                <p><strong>Your confirmation code (UUID):</strong></p>
+                                <p>{confirmationCode}</p>
+                                <p>Would you like to copy it to your clipboard?</p>
+                                <button className='confirmation-modal-div-copy' onClick={copyToClipboard}>Copy</button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             }
             footerContent={
