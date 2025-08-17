@@ -1,20 +1,34 @@
 require('dotenv').config({ path: '../.env' });
 
 const bcrypt = require('bcryptjs');
-const { keccak256, solidityPacked } = require('ethers');
-const userModel = require('../models/userModel');
+const ethers = require('ethers');
 
+const path = require('path');
+
+const userModel = require('../models/userModel');
 const electionModel = require('../models/electionModel');
 const candidateModel = require('../models/candidateModel');
 
 const db = require('../data/db');
-const { loadContracts } = require('../services/contract');
+const { loadContracts, getRevertError } = require('../services/contract');
 
-const electionId = keccak256(solidityPacked(['string'], ['demo_election']));
+const keysPath = path.resolve(__dirname, '../../blockchain/smart_contracts/scripts/keys.js');
+
+const { accounts, quorum } = require(keysPath);
+
+const host = quorum?.rpcnode?.url;
+const provider = new ethers.JsonRpcProvider(host);
+const wallet = new ethers.Wallet(accounts?.a?.privateKey, provider);
+
+const electionId = ethers.keccak256(ethers.solidityPacked(['string'], ['demo_election']));
 
 
 async function createUsers() {
+    let nonce = await provider.getTransactionCount(wallet.address, 'latest');
+
     const contracts = await loadContracts();
+
+    const transactions = [];
     
     for (let i = 0; i < 100; i++ ) {
         try {
@@ -24,16 +38,29 @@ async function createUsers() {
             if (exists) continue;
 
             const hashedPassword = await bcrypt.hash('user123', 6);
-            const voterId = keccak256(solidityPacked(['string', 'string'], [userId, 'voter']));
+            const voterId = ethers.keccak256(ethers.solidityPacked(['string', 'string'], [userId, 'voter']));
 
-            await contracts.voterManager.registerVoter(voterId);
+            nonce++;
+            
+            try {
+                await contracts.voterManager.registerVoter.staticCall(voterId, { nonce: nonce });
+            } catch {
+                continue;
+            }
+
+            const tx = await contracts.voterManager.registerVoter(voterId, { nonce: nonce });
+
+            transactions.push(tx);
 
             userModel.registerUser(voterId, userId, hashedPassword, userId, '', 'voter');
         } catch (err) {
             console.log('Failed to create user:', err);
         }
     }
+
+    await Promise.allSettled(transactions);
 }
+
 
 async function createElection() {
     try {
@@ -86,9 +113,12 @@ async function createCandidates() {
 }
 
 (async () => {
-    await createUsers();
-    await createElection();
-    await createCandidates();
-
-    console.log('Initialized');
+    try {
+        await createUsers();
+        await createElection();
+        await createCandidates();
+        console.log('Initialized');
+    } catch (err) {
+        console.error('Initialization failed:', err);
+    }
 })()
