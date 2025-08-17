@@ -281,7 +281,7 @@ function Voting() {
                                 type='submit'
                                 disabled={allVotesValid || loading}
                             >
-                                Submit
+                                {loading ? 'Submitting...' : 'Submit'}
                             </button>
                         </div>
                     </form>

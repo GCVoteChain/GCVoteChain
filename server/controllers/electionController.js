@@ -1,3 +1,6 @@
+const { Mutex } = require('async-mutex');
+const nonceMutex = new Mutex();
+
 const { keccak256, solidityPacked } = require('ethers');
 const electionModel = require('../models/electionModel.js');
 const candidateModel = require('../models/candidateModel.js');
@@ -13,10 +16,16 @@ const { loadContracts, getRevertError } = require('../services/contract.js');
 const path = require('path');
 
 const keysPath = path.resolve(__dirname, '../../blockchain/smart_contracts/scripts/keys');
-const { quorum } = require(keysPath);
+const { accounts, quorum } = require(keysPath);
 
 const host = quorum?.rpcnode?.url;
 const provider = new ethers.JsonRpcProvider(host);
+const wallet = new ethers.Wallet(accounts?.a?.privateKey, provider);
+
+let currentNonce = null;
+(async () => {
+    currentNonce = await provider.getTransactionCount(wallet.address, 'latest');
+})();
 
 
 async function add(req, res) {
@@ -145,6 +154,8 @@ async function results(req, res) {
 
 
 async function vote(req, res) {
+    const release = await nonceMutex.acquire();
+    
     try {
         const { studentId, vote } = req.body;
         const { electionId } = req.params;
@@ -166,7 +177,10 @@ async function vote(req, res) {
         const hasVoted = await contracts.electionManager.hasVoted(electionId, user.voter_id);
         if (hasVoted) return res.status(400).send({ message: 'You already voted for this election' });
         
-        const tx = await contracts.electionManager.vote(electionId, user.voter_id, ('0x' + vote));
+        let nonce = currentNonce;
+        currentNonce++;
+
+        const tx = await contracts.electionManager.vote(electionId, user.voter_id, ('0x' + vote), { nonce: nonce });
         await tx.wait();
 
         const uuid = uuidv4();
@@ -176,6 +190,8 @@ async function vote(req, res) {
     } catch (err) {
         console.error('Error submitting vote:', err);
         res.status(500).send({ message: `Failed to submit vote: ${getRevertError(err)}` });
+    } finally {
+        release();
     }
 }
 
