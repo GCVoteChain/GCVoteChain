@@ -7,6 +7,7 @@ const eccrypto = require('eccrypto');
 const db = require('../data/db');
 const candidateModel = require('../models/candidateModel');
 const electionModel = require('../models/electionModel');
+const ballotModel = require('../models/ballotModel');
 
 const { loadContracts } = require('../services/contract.js');
 
@@ -49,6 +50,8 @@ cron.schedule('*/5 * * * * *', async () => {
     WHERE status = 'open' AND end_time <= ?
   `).all(now);
 
+  let decryptedBallots = {};
+
   for (const { id } of openElections) {
     try {
       const txStop = await contracts.electionManager.stopElection(id);
@@ -57,6 +60,8 @@ cron.schedule('*/5 * * * * *', async () => {
       electionModel.setElectionStatus(id, 'closed');
 
       const encryptedVotes = await contracts.electionManager.getEncryptedVotes(id);
+
+      decryptedBallots[id] = decryptedBallots[id] || [];
 
       for (const encrypted of encryptedVotes) {
         const hexStr = encrypted.startsWith('0x') ? encrypted.slice(2) : encrypted;
@@ -67,6 +72,8 @@ cron.schedule('*/5 * * * * *', async () => {
 
         const vote = JSON.parse(decrypted.toString());
 
+        decryptedBallots[id].push(vote);
+
         Object.keys(vote).forEach(pos => {
           candidateModel.incrementVote(id, vote[pos], pos);
         });
@@ -75,4 +82,8 @@ cron.schedule('*/5 * * * * *', async () => {
       console.error(`Failed to end election ${id}:`, error);
     }
   }
+
+  Object.keys(decryptedBallots).forEach(electionId => {
+    ballotModel.addBallot(electionId, JSON.stringify(decryptedBallots[electionId]));
+  })
 });

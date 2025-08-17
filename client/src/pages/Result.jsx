@@ -11,6 +11,7 @@ function Result(){
     const [loading, setLoading] = useState(true);
 
     const [isElectionOver, setIsElectionOver] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
     
     const { electionId } = useParams();
 
@@ -38,10 +39,12 @@ function Result(){
                         navigate('/');
                         return;
                     }
+
+                    const decoded = jwtDecode(token);
+                    
+                    setIsAdmin(decoded.role === 'admin');
     
                     if (!electionId) {
-                        const decoded = jwtDecode(token);
-    
                         if (decoded.role === 'admin') navigate('/admin/elections');
                         else if (decoded.role === 'voter') navigate('/student/elections');
                     }
@@ -122,11 +125,60 @@ function Result(){
     }
     
 
+    const exportBallotsHandler = async () => {
+        try {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                navigate('/');
+                return;
+            }
+
+            const res = await fetch(
+                `/api/ballots/${electionId}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error('Failed to fetch ballot:', data.message);
+            }
+
+            const blob = new Blob([JSON.stringify(data.ballots, null, 2)], { type: 'application/json' });
+
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${data.title} results.json`;
+            document.body.appendChild(link);
+            link.click();
+
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    
+
     return(
         <div className='results'>
-            <div>
+            <div className='results-back'>
                 <button type='button' onClick={backPageHandler}>Back</button>
             </div>
+
+            {isAdmin && isElectionOver && (
+                <div className='results-export'>
+                    <button type='button' onClick={exportBallotsHandler}>Export</button>
+                </div>
+            )}
+            
             <div className='results-candidates'>
                 {loading ? (
                     <p>Loading...</p>

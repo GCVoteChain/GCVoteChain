@@ -156,9 +156,16 @@ async function vote(req, res) {
         if (!user) return res.status(400).send({ message: `Invalid ID: ${studentId}`});
 
         const contracts = await loadContracts();
+
+        try {
+            await contracts.electionManager.hasVoted(electionId, user.voter_id);
+        } catch (err) {
+            return res.status(400).send({ message: `Failed to submit vote: ${getRevertError(err)}` });
+        }
+        
         const hasVoted = await contracts.electionManager.hasVoted(electionId, user.voter_id);
         if (hasVoted) return res.status(400).send({ message: 'You already voted for this election' });
-
+        
         const tx = await contracts.electionManager.vote(electionId, user.voter_id, ('0x' + vote));
         await tx.wait();
 

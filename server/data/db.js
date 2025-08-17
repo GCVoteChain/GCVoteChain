@@ -61,6 +61,13 @@ db.exec(`
     timestamp INTEGER NOT NULL
   );
 
+  CREATE TABLE IF NOT EXISTS ballots (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    election_id TEXT NOT NULL,
+    votes TEXT NOT NULL,
+    FOREIGN KEY (election_id) REFERENCES elections(id)
+  );
+
   CREATE TABLE IF NOT EXISTS auth_codes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     student_id TEXT NOT NULL,

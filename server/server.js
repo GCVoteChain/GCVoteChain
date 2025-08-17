@@ -5,13 +5,18 @@ const path = require('path');
 const fs = require('fs');
 
 const crypto = require('crypto');
-
+const eccrypto = require('eccrypto');
 
 const PORT = 8008;
 
 const envPath = path.join(__dirname, '.env');
 if (!fs.existsSync(envPath)) {
-  fs.writeFileSync(envPath, `PORT=${PORT}\nJWT_TOKEN=${crypto.randomBytes(64).toString('hex')}\n`);
+  fs.writeFileSync(envPath, 
+    `\rPORT=${PORT}
+    \rJWT_TOKEN=${crypto.randomBytes(64).toString('hex')}
+    \rCRYPTO_PRIVATE_KEY=${eccrypto.generatePrivate().toString('hex')}
+    `
+  );
 } else {
   const envFile = fs.readFileSync(envPath, 'utf8');
 
@@ -23,6 +28,11 @@ if (!fs.existsSync(envPath)) {
   const tokenExists = envFile.split('\n').some(l => l.trim().startsWith('JWT_TOKEN='));
   if (!tokenExists) {
     fs.appendFileSync(envPath, `JWT_TOKEN=${crypto.randomBytes(64).toString('hex')}\n`);
+  }
+
+  const privKeyExists = envFile.split('\n').some(l => l.trim().startsWith('CRYPTO_PRIVATE_KEY='));
+  if (!privKeyExists) {
+      fs.appendFileSync(envPath, `CRYPTO_PRIVATE_KEY=${eccrypto.generatePrivate().toString('hex')}\n`);
   }
 }
 
