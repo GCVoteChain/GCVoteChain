@@ -5,7 +5,7 @@ const { keccak256, solidityPacked } = require('ethers');
 
 
 (async () => {
-    const start = Math.floor(Date.now() / 1000) + 60;
+    const start = Math.floor(Date.now() / 1000) + 10;
     const end = start + 3600;
     
     const electionId = keccak256(solidityPacked(['string'], ['demo_election']));
