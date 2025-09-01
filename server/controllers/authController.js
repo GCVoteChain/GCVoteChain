@@ -1,7 +1,9 @@
 const bcrypt = require('bcryptjs');
 const { keccak256, solidityPacked } = require('ethers');
+
 const userModel = require('../models/userModel.js');
 const codeModel = require('../models/authCodeModel.js');
+const { getAndIncrementNonce } = require('../models/nonceTrackerModel.js');
 
 const jwt = require('jsonwebtoken');
 
@@ -34,13 +36,15 @@ async function register(req, res) {
     
         const contracts = await loadContracts();
 
+        const nonce = getAndIncrementNonce();
+
         try {
-            await contracts.voterManager.registerVoter.staticCall(voterId);
+            await contracts.voterManager.registerVoter.staticCall(voterId, { nonce: nonce });
         } catch (err) {
             return res.status(400).send({ message: `Failed to register user: ${getRevertError(err)}`})
         }
 
-        const tx = await contracts.voterManager.registerVoter(voterId);
+        const tx = await contracts.voterManager.registerVoter(voterId, { nonce: nonce });
         await tx.wait();
 
         userModel.registerUser(voterId, studentId, hashedPassword, name, email, role);

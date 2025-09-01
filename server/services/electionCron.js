@@ -8,6 +8,7 @@ const db = require('../data/db');
 const candidateModel = require('../models/candidateModel');
 const electionModel = require('../models/electionModel');
 const ballotModel = require('../models/ballotModel');
+const { getAndIncrementNonce } = require('../models/nonceTrackerModel');
 
 const { loadContracts } = require('../services/contract.js');
 
@@ -34,10 +35,18 @@ cron.schedule('*/5 * * * * *', async () => {
 
   for (const { id } of scheduledElections) {
     try {
-      const tx = await contracts.electionManager.startElection(id);
-      await tx.wait();
+      const nonce = await getAndIncrementNonce();
       
+      try {
+        await contracts.electionManager.startElection.staticCall(id, { nonce: nonce });
+      } catch (error) {
+        console.error(`Failed to start election ${id}:`, error);
+      }
+
       electionModel.setElectionStatus(id, 'open');
+      
+      const tx = await contracts.electionManager.startElection(id, { nonce: nonce });
+      await tx.wait();
     } catch (error) {
       console.error(`Failed to start election ${id}:`, error);
     }
@@ -54,10 +63,18 @@ cron.schedule('*/5 * * * * *', async () => {
 
   for (const { id } of openElections) {
     try {
-      const txStop = await contracts.electionManager.stopElection(id);
-      await txStop.wait();
-
+      const nonce = await getAndIncrementNonce();
+      
+      try {
+        const txStop = await contracts.electionManager.stopElection.staticCall(id, { nonce: nonce });
+      } catch (error) {
+        console.error(`Failed to end election ${id}:`, error);
+      }
+      
       electionModel.setElectionStatus(id, 'closed');
+
+      const txStop = await contracts.electionManager.stopElection(id, { nonce: nonce });
+      await txStop.wait();
 
       const encryptedVotes = await contracts.electionManager.getEncryptedVotes(id);
 

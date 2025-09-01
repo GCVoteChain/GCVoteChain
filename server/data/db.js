@@ -5,7 +5,6 @@ const crypto = require('crypto');
 
 const db = require('better-sqlite3-multiple-ciphers')(path.resolve(__dirname, './database.db'));
 
-
 const envPath = path.join(__dirname, '.env');
 if (!fs.existsSync(envPath)) {
   fs.writeFileSync(envPath, `DB_KEY=${crypto.randomBytes(64).toString('hex')}`);
@@ -17,6 +16,9 @@ if (!fs.existsSync(envPath)) {
     fs.appendFileSync(envPath, `DB_KEY=${crypto.randomBytes(64).toString('hex')}\n`);
   }
 }
+
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
 
 db.pragma(`cipher='aes256cbc'`);
 db.pragma(`key='${process.env.DB_KEY}'`);
@@ -60,6 +62,13 @@ db.exec(`
     tx_hash TEXT NOT NULL,
     timestamp INTEGER NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS nonce_tracker (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    current_nonce INTEGER NOT NULL
+  );
+
+  INSERT OR IGNORE INTO nonce_tracker (id, current_nonce) VALUES (1, 0);
 
   CREATE TABLE IF NOT EXISTS ballots (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

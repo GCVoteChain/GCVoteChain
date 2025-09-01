@@ -1,11 +1,9 @@
-const { Mutex } = require('async-mutex');
-const nonceMutex = new Mutex();
-
 const { keccak256, solidityPacked } = require('ethers');
 const electionModel = require('../models/electionModel.js');
 const candidateModel = require('../models/candidateModel.js');
 const transactionModel = require('../models/transactionModel.js');
 const userModel = require('../models/userModel.js');
+const { getAndIncrementNonce } = require('../models/nonceTrackerModel.js');
 
 const ethers = require('ethers');
 
@@ -22,11 +20,6 @@ const host = quorum?.rpcnode?.url;
 const provider = new ethers.JsonRpcProvider(host);
 const wallet = new ethers.Wallet(accounts?.a?.privateKey, provider);
 
-let currentNonce = null;
-(async () => {
-    currentNonce = await provider.getTransactionCount(wallet.address, 'latest');
-})();
-
 
 async function add(req, res) {
     try {
@@ -36,13 +29,15 @@ async function add(req, res) {
 
         const contracts = await loadContracts();
 
+        const nonce = await getAndIncrementNonce();
+
         try {
-            await contracts.electionManager.createElection.staticCall(id);
+            await contracts.electionManager.createElection.staticCall(id, { nonce: nonce });
         } catch (err) {
             return res.status(400).send({ message: `Failed to create election: ${getRevertError(err)}`});
         }
 
-        const tx = await contracts.electionManager.createElection(id);
+        const tx = await contracts.electionManager.createElection(id, { nonce: nonce });
         await tx.wait();
 
         electionModel.addElection(id, title);
@@ -100,7 +95,7 @@ async function remove(req, res) {
     try {
         const { id } = req.body;
 
-        electionModel.addElection(id, title);
+        electionModel.removeElection(id, title);
 
         res.send({ message: 'Election added successfully' });
     } catch (err) {
@@ -154,8 +149,6 @@ async function results(req, res) {
 
 
 async function vote(req, res) {
-    const release = await nonceMutex.acquire();
-    
     try {
         const { studentId, vote } = req.body;
         const { electionId } = req.params;
@@ -177,8 +170,7 @@ async function vote(req, res) {
         const hasVoted = await contracts.electionManager.hasVoted(electionId, user.voter_id);
         if (hasVoted) return res.status(400).send({ message: 'You already voted for this election' });
         
-        let nonce = currentNonce;
-        currentNonce++;
+        const nonce = await getAndIncrementNonce();
 
         const tx = await contracts.electionManager.vote(electionId, user.voter_id, ('0x' + vote), { nonce: nonce });
         await tx.wait();
@@ -190,8 +182,6 @@ async function vote(req, res) {
     } catch (err) {
         console.error('Error submitting vote:', err);
         res.status(500).send({ message: `Failed to submit vote: ${getRevertError(err)}` });
-    } finally {
-        release();
     }
 }
 

@@ -8,6 +8,7 @@ const path = require('path');
 const userModel = require('../models/userModel');
 const electionModel = require('../models/electionModel');
 const candidateModel = require('../models/candidateModel');
+const { getAndIncrementNonce } = require('../models/nonceTrackerModel');
 
 const db = require('../data/db');
 const { loadContracts, getRevertError } = require('../services/contract');
@@ -24,8 +25,6 @@ const electionId = ethers.keccak256(ethers.solidityPacked(['string'], ['demo_ele
 
 
 async function createUsers() {
-    let nonce = await provider.getTransactionCount(wallet.address, 'latest');
-
     const contracts = await loadContracts();
 
     const transactions = [];
@@ -40,7 +39,7 @@ async function createUsers() {
             const hashedPassword = await bcrypt.hash('user123', 6);
             const voterId = ethers.keccak256(ethers.solidityPacked(['string', 'string'], [userId, 'voter']));
 
-            nonce++;
+            const nonce = await getAndIncrementNonce();
             
             try {
                 await contracts.voterManager.registerVoter.staticCall(voterId, { nonce: nonce });
@@ -71,6 +70,8 @@ async function createElection() {
         await contracts.electionManager.createElection(electionId);
         
         electionModel.addElection(electionId, 'demo');
+
+        await getAndIncrementNonce();
     } catch (err) {
         console.log('Failed to create election:', err);
     }
