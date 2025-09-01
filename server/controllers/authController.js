@@ -29,14 +29,13 @@ let transporter = nodemailer.createTransport({
 async function register(req, res) {
     try {
         const { studentId, password, name, email, role } = req.body;
-        console.log(req.body);
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const voterId = keccak256(solidityPacked(['string', 'string', 'string'], [studentId, email, role]));
     
         const contracts = await loadContracts();
 
-        const nonce = getAndIncrementNonce();
+        const nonce = await getAndIncrementNonce();
 
         try {
             await contracts.voterManager.registerVoter.staticCall(voterId, { nonce: nonce });
@@ -129,8 +128,6 @@ async function updatePassword(req, res) {
 
         const user = userModel.getUser(studentId);
         if (!user) throw new Error(`ID (${studentId}) not found\n`);
-
-        console.log(user.enabled_2fa);
 
         if (user.enabled_2fa) {
             const currentTime = Math.floor(Date.now() / 1000);
