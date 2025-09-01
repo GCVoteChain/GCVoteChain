@@ -224,7 +224,7 @@ function Settings(){
                     {showCodeInputModal && (
                         <div className='code-modal'>
                             <div className='code-modal-form'>
-                                <form onSubmit={toggle2FAHandler}>
+                                <form onSubmit={showPasswordInputModal ? newPasswordHandler : toggle2FAHandler}>
                                     <p>{codeStatus}</p>
                                     <div className='code-modal-form-input-box'>
                                         <input
