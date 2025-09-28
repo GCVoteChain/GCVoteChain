@@ -19,6 +19,8 @@ function Candidates () {
         ]
     }, []);
 
+    const [hasVoted, setHasVoted] = useState(false);
+    
     const [selectedElection, setSelectedElection] = useState({});
     const [candidates, setCandidates] = useState({});
 
@@ -59,7 +61,7 @@ function Candidates () {
         setSelectedElection(election);
 
         const res = await fetch(
-            `/api/candidates/${electionId}`,
+            `/api/candidates/${electionId}/preview`,
             {
                 method: 'GET',
                 headers: {
@@ -71,6 +73,8 @@ function Candidates () {
         if (res.ok) {
             const data = await res.json();
 
+            setHasVoted(data.hasVoted);
+
             setCandidates(() => {
                 const grouped = {};
 
@@ -78,7 +82,7 @@ function Candidates () {
                     grouped[position] = [];
                 });
 
-                data.forEach(({ student_id, position, name }) => {
+                data.candidates.forEach(({ student_id, position, name }) => {
                     if (!grouped[position]) grouped[position] = [];
                     grouped[position].push({ student_id, position, name });
                 });
@@ -116,7 +120,7 @@ function Candidates () {
                             <button
                                 type='button'
                                 onClick={() => navigate(`/student/elections/${selectedElection.id}/vote`)}
-                                disabled={selectedElection.status !== 'open'}
+                                disabled={selectedElection.status !== 'open' || hasVoted}
                             >
                                 Vote
                             </button>

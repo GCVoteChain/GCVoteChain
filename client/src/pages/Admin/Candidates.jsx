@@ -65,7 +65,7 @@ function Candidates () {
         setSelectedElection(election);
 
         const res = await fetch(
-            `/api/candidates/${electionId}`,
+            `/api/candidates/${electionId}/preview`,
             {
                 method: 'GET',
                 headers: {
@@ -84,7 +84,7 @@ function Candidates () {
                     grouped[position] = [];
                 });
 
-                data.forEach(({ student_id, position, name }) => {
+                data.candidates.forEach(({ student_id, position, name }) => {
                     if (!grouped[position]) grouped[position] = [];
                     grouped[position].push({ student_id, position, name });
                 });
@@ -252,10 +252,16 @@ function Candidates () {
                 <div className='candidates-div'>
                     <div className='candidates-div-header'>
                         <h2>{selectedElection.title}</h2>
-                        <button className='candidates-div-add' onClick={() => {
-                            setSelectedCandidate({});
-                            setShowCandidateInfoModal(true);
-                        }}>New Candidate</button>
+                        <button
+                            className='candidates-div-add'
+                            disabled={loading || selectedElection.status !== 'draft'}
+                            onClick={() => {
+                                setSelectedCandidate({});
+                                setShowCandidateInfoModal(true);
+                            }}
+                        >
+                            New Candidate
+                        </button>
                     </div>
                     <div className='candidates-div-list'>
                         {POSITIONS.map((position) => (
@@ -266,14 +272,26 @@ function Candidates () {
                                         {candidates[position].map((candidate) => (
                                             <li key={candidate.student_id}>
                                                 <h3>{candidate.name}</h3>
-                                                <button className='candidate-edit' onClick={() => {
-                                                    setSelectedCandidate(candidate);
-                                                    setShowCandidateInfoModal(true);
-                                                }}>Edit</button>
-                                                <button className='candidate-remove' onClick={() => {
-                                                    const confirm = window.confirm(`Are you sure you want to remove ${candidate.name}?`);
-                                                    if (confirm) removeCandidateHandler(candidate.student_id);
-                                                }}>Remove</button>
+                                                <button
+                                                    className='candidate-edit'
+                                                    disabled={loading || selectedElection.status !== 'draft'}
+                                                    onClick={() => {
+                                                        setSelectedCandidate(candidate);
+                                                        setShowCandidateInfoModal(true);
+                                                    }}
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    className='candidate-remove'
+                                                    disabled={loading || selectedElection.status !== 'draft'}
+                                                    onClick={() => {
+                                                        const confirm = window.confirm(`Are you sure you want to remove ${candidate.name}?`);
+                                                        if (confirm) removeCandidateHandler(candidate.student_id);
+                                                    }}
+                                                >
+                                                    Remove
+                                                </button>
                                             </li>
                                         ))}
                                     </ul>
@@ -295,7 +313,7 @@ function Candidates () {
                                             value={selectedCandidate.student_id ? selectedCandidate.student_id : newId}
                                             onChange={(e) => setNewId(e.target.value)}
                                             required
-                                            disabled={selectedCandidate.student_id || loading}
+                                            disabled={selectedCandidate.student_id || loading || selectedElection.status !== 'draft'}
                                         />
                                     </label>
                                     <label>
@@ -305,7 +323,7 @@ function Candidates () {
                                             value={selectedCandidate.name || '' }
                                             onChange={(e) => setSelectedCandidate({ ...selectedCandidate, name: e.target.value })}
                                             required
-                                            disabled={loading}
+                                            disabled={loading || selectedElection.status !== 'draft'}
                                         />
                                     </label>
                                     <label>
@@ -314,7 +332,7 @@ function Candidates () {
                                             value={selectedCandidate.position || ''}
                                             onChange={(e) => setSelectedCandidate({ ...selectedCandidate, position: e.target.value })}
                                             required
-                                            disabled={loading}
+                                            disabled={loading || selectedElection.status !== 'draft'}
                                         >
                                             <option value=''>Select Position</option>
                                             {POSITIONS.map((pos) => (
@@ -325,7 +343,7 @@ function Candidates () {
                                         </select>
                                     </label>
                                     <div className='modal-buttons'>
-                                        <button type='submit' disabled={loading}>
+                                        <button type='submit' disabled={loading || selectedElection.status !== 'draft'}>
                                             {loading ? 'Saving...' : 'Save'}
                                         </button>
                                         <button
@@ -335,7 +353,7 @@ function Candidates () {
                                                 setSelectedCandidate({});
                                                 setNewId('');
                                             }}
-                                            disabled={loading}
+                                            disabled={loading || selectedElection.status !== 'draft'}
                                         >
                                             Cancel
                                         </button>

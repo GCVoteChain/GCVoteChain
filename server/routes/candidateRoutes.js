@@ -17,8 +17,12 @@ router.put('/update', authenticateToken, authenticateRole('admin'), candidateCon
 router.delete('/remove', authenticateToken, authenticateRole('admin'), candidateController.remove);
 
 
+// Get candidates preview
+router.get('/:electionId/preview', authenticateToken, authenticateRole('voter', 'admin'), candidateController.getPreview);
+
+
 // Get candidates for certain election route
-router.get('/:electionId', authenticateToken, authenticateRole('voter', 'admin'), candidateController.get);
+router.get('/:electionId/voting', authenticateToken, authenticateRole('voter'), candidateController.get);
 
 
 module.exports = router;

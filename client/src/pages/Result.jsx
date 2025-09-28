@@ -71,7 +71,7 @@ function Result(){
                     setIsElectionOver(Date.now() > election.end_time * 1000);
 
                     const res = await fetch(
-                        `/api/candidates/${election.id}`,
+                        `/api/candidates/${election.id}/preview`,
                         {
                             method: 'GET',
                             headers: {
@@ -90,7 +90,7 @@ function Result(){
                                 grouped[position] = [];
                             });
 
-                            data.forEach(({ student_id, position, name, vote_count }) => {
+                            data.candidates.forEach(({ student_id, position, name, vote_count }) => {
                                 if (!grouped[position]) grouped[position] = [];
                                 grouped[position].push({ student_id, position, name, vote_count });
                             });
@@ -121,7 +121,7 @@ function Result(){
 
         const role = jwtDecode(token).role;
         if (role === 'voter') navigate(`/student/elections/${electionId}/candidates`);
-        else if (role === 'admin') navigate(`/admin/elections/${electionId}/candidates`);
+        else if (role === 'admin') navigate(`/admin/elections/`);
     }
     
 

@@ -119,6 +119,13 @@
 }
 
 
+.candidate-edit:disabled {
+    background-color: #ccc;
+    color: white;
+    cursor: not-allowed;
+}
+
+
 .candidate-remove {
     background-color: #dc3545;
     color: white;
@@ -127,6 +134,13 @@
 
 .candidate-remove:hover {
     background-color: #bd2130;
+}
+
+
+.candidate-remove:disabled {
+    background-color: #ccc;
+    color: white;
+    cursor: not-allowed;
 }
 
 

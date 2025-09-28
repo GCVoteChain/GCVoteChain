@@ -70,7 +70,6 @@ function Election() {
                 return;
             }
 
-            console.log('asd');
             const res = await fetch(
                 `/api/elections/vote-confirmation/${UUID}`,
                 {

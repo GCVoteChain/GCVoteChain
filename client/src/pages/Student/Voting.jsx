@@ -24,6 +24,7 @@ function Voting() {
         ]
     }, []);
 
+    const [hasVoted, setHasVoted] = useState(false);
 
     const [confirmationCode, setConfirmationCode] = useState('');
     const [showCopyPrompt, setShowCopyPrompt] = useState(false);
@@ -71,7 +72,7 @@ function Voting() {
             setSelectedElection(election);
 
             const res = await fetch(
-                `/api/candidates/${electionId}`,
+                `/api/candidates/${electionId}/voting`,
                 {
                     method: 'GET',
                     headers: {
@@ -83,6 +84,8 @@ function Voting() {
             if (res.ok) {
                 const data = await res.json();
 
+                setHasVoted(data.hasVoted);
+
                 setCandidates(() => {
                     const grouped = {};
 
@@ -90,7 +93,7 @@ function Voting() {
                         grouped[position] = [];
                     });
 
-                    data.forEach(({ student_id, position, name }) => {
+                    data.candidates.forEach(({ student_id, position, name }) => {
                         if (!grouped[position]) grouped[position] = [];
                         grouped[position].push({ student_id, position, name });
                     })
@@ -279,7 +282,7 @@ function Voting() {
                         <div className='voting-submit'>
                             <button 
                                 type='submit'
-                                disabled={allVotesValid || loading}
+                                disabled={allVotesValid || loading || hasVoted}
                             >
                                 {loading ? 'Submitting...' : 'Submit'}
                             </button>
